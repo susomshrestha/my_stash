@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_stash/pages/password.dart';
 import 'package:my_stash/pages/profile.dart';
+import 'package:my_stash/theme/light_theme.dart';
+import 'package:my_stash/theme/dark_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,9 +14,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: const HomePage(),
+      theme: lightTheme,
+      darkTheme: darkTheme,
     );
   }
 }
@@ -27,30 +31,62 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   int selectedIndex = 0;
 
-  final List<Widget> _bodyOptions = const <Widget>[
-    PasswordPage(),
-    ProfilePage()
+  final List<Widget> _bodyOptions = <Widget>[
+    const PasswordPage(),
+    const ProfilePage()
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: NavigationBar(
-        onDestinationSelected: (int index) {
-          setState(() {
-            selectedIndex = index;
-          });
-        }, 
-        selectedIndex: selectedIndex,
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.lock), label: 'Password'),
-          NavigationDestination(icon: Icon(Icons.person_off_outlined), label: 'Profile'),
-        ],
+    return SafeArea(
+      child: Scaffold(
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2), // Shadow color
+                offset: const Offset(0, -2), // Shadow position
+                blurRadius: 6, // Shadow blur
+              ),
+            ],
+          ),
+          child: Material(
+            color: Theme.of(context).colorScheme.primary,
+            child: NavigationBar(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              onDestinationSelected: (int index) {
+                setState(() {
+                  selectedIndex = index;
+                });
+              },
+              selectedIndex: selectedIndex,
+              destinations: [
+                NavigationDestination(
+                  icon: const Icon(Icons.password),
+                  label: 'Password',
+                  selectedIcon: Icon(Icons.password,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary), // Selected icon color
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.person_off_outlined),
+                  label: 'Profile',
+                  selectedIcon: Icon(Icons.person_off_outlined,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary), // Selected icon color
+                ),
+              ],
+              indicatorColor: Theme.of(context)
+                  .scaffoldBackgroundColor, // Indicator color for selected tab
+            ),
+          ),
+        ),
+        body: _bodyOptions.elementAt(selectedIndex),
       ),
-      body: _bodyOptions.elementAt(selectedIndex),
     );
   }
 }
