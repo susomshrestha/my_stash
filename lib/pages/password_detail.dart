@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_stash/widgets/field_row.dart';
 
 class PasswordDetailPage extends StatelessWidget {
   final String title;
@@ -21,34 +22,48 @@ class PasswordDetailPage extends StatelessWidget {
                     const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 40),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'USERNAME / EMAIL',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text('test@test.com')
-                ],
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(5)),
+                child: const Column(
+                  children: [
+                    FieldRow(
+                        label: 'USERNAME / EMAIL', value: "teset@test.com"),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    FieldRow(
+                      label: 'PASSWORD',
+                      value: "*********",
+                      isPassword: true,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton: Container(
+          margin: const EdgeInsets.only(bottom: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FloatingActionButton(
+                onPressed: () {},
+                shape: const CircleBorder(),
+                backgroundColor: Theme.of(context).colorScheme.error,
+                child: const Icon(Icons.delete),
               ),
               const SizedBox(
-                height: 20,
+                width: 40,
               ),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'PASSWORD',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text('***************')
-                ],
+              FloatingActionButton(
+                onPressed: () {},
+                shape: const CircleBorder(),
+                child: const Icon(Icons.remove_red_eye),
               ),
             ],
           ),

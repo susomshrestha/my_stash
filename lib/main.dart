@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_stash/pages/login.dart';
 import 'package:my_stash/pages/password.dart';
 import 'package:my_stash/pages/profile.dart';
 import 'package:my_stash/theme/light_theme.dart';
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+      home: const LoginPage(),
       theme: lightTheme,
       darkTheme: darkTheme,
     );
