@@ -59,4 +59,5 @@ class DefaultFirebaseOptions {
     projectId: 'mystash-ee365',
     storageBucket: 'mystash-ee365.appspot.com',
   );
+
 }
