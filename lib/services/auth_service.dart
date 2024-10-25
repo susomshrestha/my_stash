@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_stash/pages/home.dart';
 import 'package:my_stash/pages/login.dart';
-import 'package:my_stash/services/custom_toast.dart';
+import 'package:my_stash/services/toast_service.dart';
 
 class GoogleAuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn();

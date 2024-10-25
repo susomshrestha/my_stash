@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_stash/services/auth_service.dart';
-import 'package:my_stash/services/custom_toast.dart';
+import 'package:my_stash/services/toast_service.dart';
 
 class ProfilePage extends StatelessWidget {
   final GoogleAuthService _googleAuthService = GoogleAuthService();
@@ -66,39 +66,57 @@ class ProfilePage extends StatelessWidget {
                             color: Theme.of(context).scaffoldBackgroundColor),
                       ),
                     ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [Text('Account'), Icon(Icons.chevron_right)],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                            width: 1,
-                            color: Theme.of(context).scaffoldBackgroundColor),
-                      ),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [Text('Dark Mode'), Icon(Icons.chevron_right)],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                            width: 1,
-                            color: Theme.of(context).scaffoldBackgroundColor),
-                      ),
-                    ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Notification'),
-                        Icon(Icons.chevron_right)
+                        Text(
+                          'Account',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSecondary),
+                        ),
+                        const Icon(Icons.chevron_right)
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                            width: 1,
+                            color: Theme.of(context).scaffoldBackgroundColor),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Dark Mode',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSecondary),
+                        ),
+                        const Icon(Icons.chevron_right)
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                            width: 1,
+                            color: Theme.of(context).scaffoldBackgroundColor),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Notification',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSecondary),
+                        ),
+                        const Icon(Icons.chevron_right)
                       ],
                     ),
                   ),

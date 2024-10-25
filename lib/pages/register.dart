@@ -1,17 +1,17 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:my_stash/pages/register.dart';
+import 'package:my_stash/pages/login.dart';
 import 'package:my_stash/services/toast_service.dart';
 import 'package:my_stash/widgets/auth_page.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatelessWidget {
+  const RegisterPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     ToastService.init(context);
 
-    Widget loginForm = Column(
+    Widget registerForm = Column(
       children: [
         TextField(
           style: TextStyle(
@@ -64,16 +64,44 @@ class LoginPage extends StatelessWidget {
             ),
           ),
         ),
+        const SizedBox(
+          height: 10,
+        ),
+        TextField(
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSecondary,
+          ),
+          decoration: InputDecoration(
+            prefixIcon: Icon(Icons.password_rounded,
+                color: Theme.of(context).colorScheme.onSecondary),
+            hintText: 'Confirm Password',
+            contentPadding: const EdgeInsets.symmetric(vertical: 16),
+            hintStyle:
+                TextStyle(color: Theme.of(context).colorScheme.onSurface),
+            // Border customization
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSecondary), // Default (inactive) color
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary, width: 2),
+            ),
+          ),
+        ),
       ],
     );
 
-    Widget loginActionBtn = Column(
+    // Define the action button for registration
+    Widget registerActionBtn = Column(
       children: [
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
             onPressed: () {
-              print('Login button pressed');
+              print('Register button pressed');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context)
@@ -82,10 +110,11 @@ class LoginPage extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8), // Rounded corners
               ),
-              padding: const EdgeInsets.symmetric(vertical: 16), // Button height
+              padding:
+                  const EdgeInsets.symmetric(vertical: 16), // Button height
             ),
             child: Text(
-              "Login",
+              "Register",
               style: TextStyle(
                   fontSize: 16,
                   color: Theme.of(context).colorScheme.onPrimary,
@@ -98,12 +127,12 @@ class LoginPage extends StatelessWidget {
         ),
         RichText(
           text: TextSpan(
-            text: "Don't have an account? ",
+            text: "Already have an account? ",
             style: TextStyle(
-                fontSize: 16, color: Theme.of(context).colorScheme.onSecondary),
+                color: Theme.of(context).colorScheme.onSecondary, fontSize: 16),
             children: [
               TextSpan(
-                text: 'Register',
+                text: 'Login',
                 style: TextStyle(
                   color: Theme.of(context)
                       .colorScheme
@@ -116,7 +145,7 @@ class LoginPage extends StatelessWidget {
                   ..onTap = () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => RegisterPage()),
+                      MaterialPageRoute(builder: (context) => LoginPage()),
                     );
                   },
               ),
@@ -126,6 +155,6 @@ class LoginPage extends StatelessWidget {
       ],
     );
 
-    return AuthPage(form: loginForm, actionButton: loginActionBtn);
+    return AuthPage(form: registerForm, actionButton: registerActionBtn);
   }
 }
