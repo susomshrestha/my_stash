@@ -1,12 +1,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:my_stash/pages/register.dart';
+import 'package:my_stash/services/auth_service.dart';
 import 'package:my_stash/services/toast_service.dart';
 import 'package:my_stash/services/validator_service.dart';
 import 'package:my_stash/widgets/auth_page.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -14,6 +15,26 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _loginFormKey = GlobalKey<FormState>();
+  final AuthService _authService = AuthService();
+
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Dispose the controllers when the state is removed
+    _passwordController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> login() async {
+    if (!(_loginFormKey.currentState?.validate() ?? true)) {
+      return;
+    }
+    await _authService.login(
+        context, _emailController.text, _passwordController.text);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +46,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Column(
         children: [
           TextFormField(
+            controller: _emailController,
             validator: validator.emailValidator,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSecondary,
@@ -53,6 +75,7 @@ class _LoginPageState extends State<LoginPage> {
             height: 10,
           ),
           TextFormField(
+            controller: _passwordController,
             validator: validator.passwordValidator,
             obscureText: true,
             style: TextStyle(
@@ -87,11 +110,7 @@ class _LoginPageState extends State<LoginPage> {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () {
-              if (!(_loginFormKey.currentState?.validate() ?? true)) {
-                return;
-              }
-            },
+            onPressed: login,
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context)
                   .colorScheme

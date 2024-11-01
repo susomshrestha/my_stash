@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:my_stash/pages/login.dart';
+import 'package:my_stash/services/auth_service.dart';
 import 'package:my_stash/services/toast_service.dart';
 import 'package:my_stash/services/validator_service.dart';
 import 'package:my_stash/widgets/auth_page.dart';
@@ -14,6 +15,26 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _registerFormKey = GlobalKey<FormState>();
+  final AuthService _authService = AuthService();
+
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Dispose the controllers when the state is removed
+    _passwordController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> submitForm() async {
+    if (!(_registerFormKey.currentState?.validate() ?? true)) {
+      return;
+    }
+    await _authService.register(
+        context, _emailController.text, _passwordController.text);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +46,7 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Column(
         children: [
           TextFormField(
+            controller: _emailController,
             validator: validator.emailValidator,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSecondary,
@@ -53,6 +75,7 @@ class _RegisterPageState extends State<RegisterPage> {
             height: 10,
           ),
           TextFormField(
+            controller: _passwordController,
             validator: validator.passwordValidator,
             obscureText: true,
             style: TextStyle(
@@ -117,11 +140,7 @@ class _RegisterPageState extends State<RegisterPage> {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () {
-              if (!(_registerFormKey.currentState?.validate() ?? true)) {
-                return;
-              }
-            },
+            onPressed: submitForm,
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context)
                   .colorScheme

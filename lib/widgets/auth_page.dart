@@ -4,7 +4,7 @@ import 'package:my_stash/services/auth_service.dart';
 class AuthPage extends StatelessWidget {
   final Widget form;
   final Widget actionButton;
-  final GoogleAuthService _googleAuthService = GoogleAuthService();
+  final AuthService _authService = AuthService();
 
   AuthPage({
     super.key,
@@ -16,80 +16,73 @@ class AuthPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'My Stash',
-                style: TextStyle(
-                    fontSize: 30,
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold),
-              ),
-              Expanded(
-                flex: 1,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                        height: 20,
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height - 
+                        MediaQuery.of(context).padding.top - 
+                        MediaQuery.of(context).padding.bottom,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'My Stash',
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  form,
+                  const SizedBox(height: 40),
+                  actionButton,
+                  const SizedBox(height: 20),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Divider(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          thickness: 1,
+                        ),
                       ),
-                      form,
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      actionButton,
-                      const SizedBox(height: 20),
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Divider(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface, // Color of the line
-                              thickness: 1, // Thickness of the line
-                            ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          'Or Login with',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Text(
-                              'Or Login with',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Divider(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface, // Color of the line
-                              thickness: 1, // Thickness of the line
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          _googleAuthService.signInWithGoogle(context);
-                        },
-                        child: Image.asset(
-                          'assets/icons/googleIcon.png',
-                          height: 30,
-                          width: 30,
+                      Expanded(
+                        child: Divider(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          thickness: 1,
                         ),
                       ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        _authService.signInWithGoogle(context);
+                      },
+                      child: Image.asset(
+                        'assets/icons/googleIcon.png',
+                        height: 30,
+                        width: 30,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

@@ -11,6 +11,9 @@ class ToastService {
   static void showCustomToast(BuildContext context, String message,
       {String? type}) {
     // Get screen width
+    if (!context.mounted) {
+      return;
+    }
     double screenWidth = MediaQuery.of(context).size.width;
     Icon icon;
 

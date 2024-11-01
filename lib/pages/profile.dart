@@ -3,7 +3,7 @@ import 'package:my_stash/services/auth_service.dart';
 import 'package:my_stash/services/toast_service.dart';
 
 class ProfilePage extends StatelessWidget {
-  final GoogleAuthService _googleAuthService = GoogleAuthService();
+  final AuthService _googleAuthService = AuthService();
 
   ProfilePage({super.key});
 

@@ -1,11 +1,64 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_stash/pages/home.dart';
 import 'package:my_stash/pages/login.dart';
 import 'package:my_stash/services/toast_service.dart';
 
-class GoogleAuthService {
+class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  Future<void> register(
+      BuildContext context, String email, String password) async {
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      ToastService.showCustomToast(context, "Registration successful.",
+          type: 'success');
+
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => LoginPage()));
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        ToastService.showCustomToast(context, "The password is too weak.",
+            type: 'error');
+      } else if (e.code == 'email-already-in-use') {
+        ToastService.showCustomToast(context, "Email is already in use.",
+            type: 'error');
+      }
+    } catch (e) {
+      ToastService.showCustomToast(
+          context, "Failed to register. Please Try Again.",
+          type: 'error');
+    }
+  }
+
+  Future<void> login(
+      BuildContext context, String email, String password) async {
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      ToastService.showCustomToast(context, "Registration successful.",
+          type: 'success');
+
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => const HomePage()));
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        ToastService.showCustomToast(context, "User is not registered.",
+            type: "error");
+      } else if (e.code == 'wrong-password') {
+        ToastService.showCustomToast(context, "Email/Password is invalid.",
+            type: "error");
+      }
+    } catch (e) {
+      ToastService.showCustomToast(
+          context, "Failed to Login. Please try again.",
+          type: "error");
+    }
+  }
 
   // Sign in with Google
   Future<void> signInWithGoogle(BuildContext context) async {
@@ -49,7 +102,9 @@ class GoogleAuthService {
   // Sign out from Google
   Future<void> signOutFromGoogle(BuildContext context) async {
     try {
+      // TODO: check if user login in provider
       await _googleSignIn.signOut();
+      await FirebaseAuth.instance.signOut();
       if (context.mounted) {
         ToastService.showCustomToast(context, "Successfully signed out.",
             type: 'success');
@@ -57,7 +112,6 @@ class GoogleAuthService {
             context, MaterialPageRoute(builder: (context) => LoginPage()));
       }
     } catch (e) {
-      print(e);
       if (context.mounted) {
         ToastService.showCustomToast(
             context, "Error signing out: ${e.toString()}",
