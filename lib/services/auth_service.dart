@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -9,17 +10,31 @@ class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   Future<void> register(
-      BuildContext context, String email, String password) async {
+      BuildContext context, String email, String password, String name) async {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      ToastService.showCustomToast(context, "Registration successful.",
-          type: 'success');
 
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => LoginPage()));
+      User? user = userCredential.user;
+
+      if (user != null) {
+        // Create a new document in Firestore for the registered user
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'email': email,
+          'displayName': name,
+          'createdAt': Timestamp.now(),
+        });
+
+        ToastService.showCustomToast(context, "Registration successful.",
+            type: 'success');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         ToastService.showCustomToast(context, "The password is too weak.",
@@ -46,6 +61,8 @@ class AuthService {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => const HomePage()));
     } on FirebaseAuthException catch (e) {
+      print("===========================");
+      print(e.code);
       if (e.code == 'user-not-found') {
         ToastService.showCustomToast(context, "User is not registered.",
             type: "error");

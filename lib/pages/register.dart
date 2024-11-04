@@ -19,12 +19,14 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
 
   @override
   void dispose() {
     // Dispose the controllers when the state is removed
     _passwordController.dispose();
     _emailController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -32,8 +34,8 @@ class _RegisterPageState extends State<RegisterPage> {
     if (!(_registerFormKey.currentState?.validate() ?? true)) {
       return;
     }
-    await _authService.register(
-        context, _emailController.text, _passwordController.text);
+    await _authService.register(context, _emailController.text,
+        _passwordController.text, _nameController.text);
   }
 
   @override
@@ -45,6 +47,35 @@ class _RegisterPageState extends State<RegisterPage> {
       key: _registerFormKey,
       child: Column(
         children: [
+          TextFormField(
+            controller: _nameController,
+            validator: validator.nameValidator,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
+            decoration: InputDecoration(
+              prefixIcon: Icon(Icons.person_2_outlined,
+                  color: Theme.of(context).colorScheme.onSecondary),
+              hintText: 'Name',
+              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+              hintStyle:
+                  TextStyle(color: Theme.of(context).colorScheme.onSurface),
+              // Border customization
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSecondary), // Default (inactive) color
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary, width: 2),
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
           TextFormField(
             controller: _emailController,
             validator: validator.emailValidator,

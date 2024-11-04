@@ -4,6 +4,13 @@ import 'package:flutter/material.dart';
 class ValidatorService {
   String? password;
 
+  String? nameValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Name is Required';
+    }
+    return null; // Return null if valid
+  }
+
   String? emailValidator(String? value) {
     final RegExp emailRegExp = RegExp(
       r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
