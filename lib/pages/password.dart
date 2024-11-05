@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:my_stash/models/password_model.dart';
+import 'package:my_stash/models/user_model.dart';
 import 'package:my_stash/pages/manage_password.dart';
+import 'package:my_stash/providers/user_provider.dart';
+import 'package:my_stash/services/password_service.dart';
+import 'package:my_stash/services/toast_service.dart';
 import 'package:my_stash/widgets/password_list_item.dart';
+import 'package:provider/provider.dart';
 
 class PasswordPage extends StatefulWidget {
   const PasswordPage({super.key});
@@ -12,19 +18,14 @@ class PasswordPage extends StatefulWidget {
 class _PasswordPageState extends State<PasswordPage> {
   bool _isSearching = false; // State to track if the search is active
   final TextEditingController _searchController = TextEditingController();
+  final PasswordService _passwordService = PasswordService();
 
-  final List<Map<String, String>> passwordList = [
-    {
-      'title': 'Gmail',
-    },
-    {
-      'title': 'Facebook',
-    },
-  ];
+  List<PasswordModel> passwordList = [];
 
   @override
   void initState() {
     super.initState();
+    _fetchPasswords(); // Fetch passwords when the widget is initialized
 
     _searchController.addListener(() {
       setState(() {});
@@ -38,6 +39,22 @@ class _PasswordPageState extends State<PasswordPage> {
     super.dispose();
   }
 
+  Future<void> _fetchPasswords() async {
+    try {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      UserModel? user = userProvider.user;
+      List<PasswordModel> passwords =
+          await _passwordService.getPasswordTitlesWithIds(user!.id);
+      setState(() {
+        passwordList = passwords; // Update the password list with fetched data
+      });
+      // ToastService.showToast("Loaded all passwords.", type: "success");
+    } catch (e) {
+      // Handle any errors here (e.g., show a message)
+      ToastService.showToast("Failed to load passwords.", type: "error");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +64,7 @@ class _PasswordPageState extends State<PasswordPage> {
         toolbarHeight: 80,
         elevation: 0,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(2.0), // Height of the border
+          preferredSize: const Size.fromHeight(2.0), // Height of the border
           child: Container(
             height: 2.0, // Height of the border line
             color: Theme.of(context)
@@ -77,7 +94,7 @@ class _PasswordPageState extends State<PasswordPage> {
                 itemCount: passwordList.length,
                 itemBuilder: (context, index) {
                   final password = passwordList[index];
-                  return PasswordListItem(title: password['title']!);
+                  return PasswordListItem(title: password.title);
                 },
               ),
             ),

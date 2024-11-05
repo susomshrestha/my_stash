@@ -1,4 +1,5 @@
 class PasswordModel {
+  late final String? id;
   final String title;
   final String username;
   final String email;
@@ -6,7 +7,8 @@ class PasswordModel {
   final List<QuestionAnswerModel> extra;
 
   PasswordModel(
-      {required this.title,
+      {this.id,
+      required this.title,
       required this.username,
       required this.email,
       required this.password,
@@ -21,6 +23,20 @@ class PasswordModel {
       'extra': extra.map((item) => item.toJson()).toList(),
     };
   }
+
+  factory PasswordModel.fromJson(Map<String, dynamic> json, String id) {
+    return PasswordModel(
+      id: id,
+      title: json['title'] as String,
+      username: json['username'] as String,
+      email: json['email'] as String,
+      password: json['password'] as String,
+      extra: (json['extra'] as List<dynamic>)
+          .map((item) =>
+              QuestionAnswerModel.fromJson(item as Map<String, dynamic>))
+          .toList(),
+    );
+  }
 }
 
 class QuestionAnswerModel {
@@ -34,5 +50,12 @@ class QuestionAnswerModel {
       'question': question,
       'answer': answer,
     };
+  }
+
+  factory QuestionAnswerModel.fromJson(Map<String, dynamic> json) {
+    return QuestionAnswerModel(
+      question: json['question'] as String,
+      answer: json['answer'] as String,
+    );
   }
 }

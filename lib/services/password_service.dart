@@ -27,4 +27,22 @@ class PasswordService {
       rethrow;
     }
   }
+
+  Future<List<PasswordModel>> getPasswordTitlesWithIds(String userId) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('passwords')
+          .get();
+
+      // Create a list of PasswordModel from the documents
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return PasswordModel.fromJson(data, doc.id);
+      }).toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
