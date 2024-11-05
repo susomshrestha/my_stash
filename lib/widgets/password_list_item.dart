@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:my_stash/models/password_model.dart';
 import 'package:my_stash/pages/password_detail.dart';
 
 class PasswordListItem extends StatelessWidget {
-  final String title;
+  final PasswordModel pwd;
 
   const PasswordListItem({
     super.key,
-    required this.title,
+    required this.pwd,
   });
 
   @override
@@ -16,7 +17,7 @@ class PasswordListItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PasswordDetailPage(title: title),
+            builder: (context) => PasswordDetailPage(password: pwd),
           ),
         );
       },
@@ -32,7 +33,7 @@ class PasswordListItem extends StatelessWidget {
               color: Theme.of(context).colorScheme.onSecondary,
             ),
             title: Text(
-              title,
+              pwd.title,
               style: TextStyle(
                   color: Theme.of(context).colorScheme.onSecondary,
                   fontWeight: FontWeight.bold),

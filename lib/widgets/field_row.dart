@@ -4,13 +4,13 @@ import 'package:flutter/services.dart';
 class FieldRow extends StatelessWidget {
   final String label;
   final String value;
-  final bool isPassword;
+  final bool isHidden;
 
   const FieldRow(
       {super.key,
       required this.label,
       required this.value,
-      this.isPassword = false});
+      this.isHidden = false});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class FieldRow extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            Text(value),
+            Text(isHidden ? '*****' : value),
           ],
         ),
         IconButton(

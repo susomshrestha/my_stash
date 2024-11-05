@@ -94,7 +94,7 @@ class _PasswordPageState extends State<PasswordPage> {
                 itemCount: passwordList.length,
                 itemBuilder: (context, index) {
                   final password = passwordList[index];
-                  return PasswordListItem(title: password.title);
+                  return PasswordListItem(pwd: password);
                 },
               ),
             ),
