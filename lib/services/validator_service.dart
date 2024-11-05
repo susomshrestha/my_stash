@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 class ValidatorService {
   String? password;
 
-  String? nameValidator(String? value) {
+  String? requiredFieldValidator(String? value, String fieldName) {
     if (value == null || value.isEmpty) {
-      return 'Name is Required';
+      return '$fieldName is Required';
     }
     return null; // Return null if valid
   }

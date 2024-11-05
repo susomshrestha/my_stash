@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:my_stash/exceptions/custom_exception.dart';
 import 'package:my_stash/pages/login.dart';
 import 'package:my_stash/services/auth_service.dart';
 import 'package:my_stash/services/toast_service.dart';
@@ -34,13 +35,24 @@ class _RegisterPageState extends State<RegisterPage> {
     if (!(_registerFormKey.currentState?.validate() ?? true)) {
       return;
     }
-    await _authService.register(context, _emailController.text,
-        _passwordController.text, _nameController.text);
+    try {
+      await _authService.register(_emailController.text,
+          _passwordController.text, _nameController.text);
+
+      ToastService.showToast("Registration successful.", type: 'success');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    } on CustomException catch (ce) {
+      ToastService.showToast(ce.toString(), type: 'error');
+    } catch (e) {
+      ToastService.showToast("Failed. Please Try Again Later.", type: "error");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    ToastService.init(context);
     final ValidatorService validator = ValidatorService();
 
     Widget registerForm = Form(
@@ -49,7 +61,8 @@ class _RegisterPageState extends State<RegisterPage> {
         children: [
           TextFormField(
             controller: _nameController,
-            validator: validator.nameValidator,
+            validator: (value) =>
+                validator.requiredFieldValidator(value, 'Name'),
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSecondary,
             ),

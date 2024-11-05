@@ -1,10 +1,15 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:my_stash/exceptions/custom_exception.dart';
+import 'package:my_stash/models/user_model.dart';
+import 'package:my_stash/pages/home.dart';
 import 'package:my_stash/pages/register.dart';
+import 'package:my_stash/providers/user_provider.dart';
 import 'package:my_stash/services/auth_service.dart';
 import 'package:my_stash/services/toast_service.dart';
 import 'package:my_stash/services/validator_service.dart';
 import 'package:my_stash/widgets/auth_page.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
@@ -32,13 +37,27 @@ class _LoginPageState extends State<LoginPage> {
     if (!(_loginFormKey.currentState?.validate() ?? true)) {
       return;
     }
-    await _authService.login(
-        context, _emailController.text, _passwordController.text);
+    try {
+      UserModel user = await _authService.login(
+          _emailController.text, _passwordController.text);
+      if (mounted) {
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        userProvider.setUser(user);
+
+        ToastService.showToast("Login successful.", type: 'success');
+
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => const HomePage()));
+      }
+    } on CustomException catch (e) {
+      ToastService.showToast(e.toString(), type: "error");
+    } catch (e) {
+      ToastService.showToast("Failed to Login.", type: "error");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    ToastService.init(context);
     final ValidatorService validator = ValidatorService();
 
     Widget loginForm = Form(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:my_stash/services/auth_service.dart';
-import 'package:my_stash/services/toast_service.dart';
 
 class ProfilePage extends StatelessWidget {
   final AuthService _googleAuthService = AuthService();
@@ -9,7 +8,6 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ToastService.init(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -128,7 +126,7 @@ class ProfilePage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                _googleAuthService.signOutFromGoogle(context);
+                _googleAuthService.singOut(context);
               },
               style: OutlinedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,

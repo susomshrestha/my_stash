@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_stash/pages/manage_password.dart';
 import 'package:my_stash/widgets/password_list_item.dart';
 
 class PasswordPage extends StatefulWidget {
@@ -49,9 +50,22 @@ class _PasswordPageState extends State<PasswordPage> {
           preferredSize: Size.fromHeight(2.0), // Height of the border
           child: Container(
             height: 2.0, // Height of the border line
-            color: Theme.of(context).colorScheme.surface, // Color of the border line
+            color: Theme.of(context)
+                .colorScheme
+                .surface, // Color of the border line
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ManagePasswordPage()),
+          );
+        },
+        shape: const CircleBorder(),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: const Icon(Icons.add),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8),
