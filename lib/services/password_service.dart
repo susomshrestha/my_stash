@@ -28,6 +28,20 @@ class PasswordService {
     }
   }
 
+  Future<void> updatePassword(
+      PasswordModel password, String userId, String passwordId) async {
+    try {
+      await db
+          .collection("users")
+          .doc(userId)
+          .collection("passwords")
+          .doc(passwordId)
+          .update(password.toJson());
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<List<PasswordModel>> getPasswordTitlesWithIds(String userId) async {
     try {
       final snapshot = await FirebaseFirestore.instance

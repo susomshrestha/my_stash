@@ -80,6 +80,7 @@ class _PasswordPageState extends State<PasswordPage> {
             MaterialPageRoute(builder: (context) => const ManagePasswordPage()),
           );
         },
+        heroTag: 'addTag',
         shape: const CircleBorder(),
         backgroundColor: Theme.of(context).colorScheme.primary,
         child: const Icon(Icons.add),

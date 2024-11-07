@@ -11,7 +11,9 @@ import 'package:my_stash/widgets/help_dialog.dart';
 import 'package:provider/provider.dart';
 
 class ManagePasswordPage extends StatefulWidget {
-  const ManagePasswordPage({super.key});
+  final PasswordModel? password;
+
+  const ManagePasswordPage({super.key, this.password});
 
   @override
   State<ManagePasswordPage> createState() => _ManagePasswordPageState();
@@ -38,6 +40,28 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
       question.dispose();
     }
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // populate form if passwords is present
+    if (widget.password != null) {
+      _titleController.text = widget.password!.title;
+      _userController.text = widget.password!.username;
+      _emailController.text = widget.password!.email;
+      _passwordController.text = widget.password!.password;
+      if (widget.password!.extra.isNotEmpty) {
+        for (var extra in widget.password!.extra) {
+          // Create a new QuestionAnswer with the provided question and answer
+          var questionAnswer = QuestionAnswer();
+          questionAnswer.questionController.text = extra.question;
+          questionAnswer.answerController.text = extra.answer;
+          questionAnswers.add(questionAnswer);
+        }
+      }
+    }
   }
 
   @override
@@ -235,6 +259,10 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
       ),
     );
 
+    final String appTitle = widget.password != null
+        ? 'Edit' // Display the passed data
+        : 'Add';
+
     void saveForm() async {
       if (_manageFormKey.currentState!.validate()) {
         // Get all extra fields
@@ -249,22 +277,33 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
 
         if (user != null) {
           try {
-            await _passwordService.addPassword(
-                PasswordModel(
-                    title: _titleController.text,
-                    username: _userController.text,
-                    email: _emailController.text,
-                    password: _passwordController.text,
-                    extra: questionAnswerData),
-                user.id);
-            ToastService.showToast("Added successful.",
-                type: 'success');
+            if (appTitle == 'Add') {
+              await _passwordService.addPassword(
+                  PasswordModel(
+                      title: _titleController.text,
+                      username: _userController.text,
+                      email: _emailController.text,
+                      password: _passwordController.text,
+                      extra: questionAnswerData),
+                  user.id);
+              ToastService.showToast("Added successful.", type: 'success');
+            } else {
+              await _passwordService.updatePassword(
+                  PasswordModel(
+                      title: _titleController.text,
+                      username: _userController.text,
+                      email: _emailController.text,
+                      password: _passwordController.text,
+                      extra: questionAnswerData),
+                  user.id,
+                  widget.password!.id!);
+              ToastService.showToast("Updated successful.", type: 'success');
+            }
             Navigator.pop(context);
           } on CustomException catch (ce) {
             ToastService.showToast(ce.toString(), type: 'error');
           } catch (e) {
-            ToastService.showToast("Failed. Please try again.",
-                type: 'error');
+            ToastService.showToast("Failed. Please try again.", type: 'error');
           }
         }
       }
@@ -272,7 +311,7 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
 
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Manage')),
+        appBar: AppBar(title: Text(appTitle)),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),

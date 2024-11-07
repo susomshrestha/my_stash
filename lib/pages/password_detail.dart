@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_stash/models/password_model.dart';
+import 'package:my_stash/pages/manage_password.dart';
 import 'package:my_stash/widgets/field_row.dart';
 
 class PasswordDetailPage extends StatelessWidget {
@@ -31,11 +32,31 @@ class PasswordDetailPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  password.title,
-                  style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold),
-                ),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.contain,
+                        child: Text(
+                          password.title.toUpperCase(),
+                          style: const TextStyle(
+                              fontSize: 30, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      IconButton(
+                          iconSize: 30,
+                          onPressed: () => {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ManagePasswordPage(
+                                      password: password,
+                                    ),
+                                  ),
+                                )
+                              },
+                          icon: const Icon(Icons.edit_square))
+                    ]),
                 const SizedBox(height: 40),
                 Container(
                   width: double.infinity,
@@ -84,6 +105,7 @@ class PasswordDetailPage extends StatelessWidget {
             children: [
               FloatingActionButton(
                 onPressed: () {},
+                heroTag: 'deleteTag',
                 shape: const CircleBorder(),
                 backgroundColor: Theme.of(context).colorScheme.error,
                 child: const Icon(Icons.delete),
@@ -93,6 +115,7 @@ class PasswordDetailPage extends StatelessWidget {
               ),
               FloatingActionButton(
                 onPressed: () {},
+                heroTag: 'showTag',
                 shape: const CircleBorder(),
                 child: const Icon(Icons.remove_red_eye),
               ),
