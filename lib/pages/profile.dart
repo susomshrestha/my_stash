@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:my_stash/pages/login.dart';
+import 'package:my_stash/providers/passwords_provider.dart';
+import 'package:my_stash/providers/user_provider.dart';
 import 'package:my_stash/services/auth_service.dart';
+import 'package:my_stash/services/toast_service.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
   final AuthService _googleAuthService = AuthService();
@@ -8,6 +13,9 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final passwordProvider =
+        Provider.of<PasswordsProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -125,8 +133,20 @@ class ProfilePage extends StatelessWidget {
               height: 20,
             ),
             ElevatedButton(
-              onPressed: () {
-                _googleAuthService.singOut(context);
+              onPressed: () async {
+                try {
+                  await _googleAuthService.singOut(context);
+                  ToastService.showToast("Successfully signed out.",
+                      type: 'success');
+                  if (context.mounted) {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => LoginPage()));
+                  }
+                  userProvider.clearUser();
+                  passwordProvider.clearAll();
+                } catch (e) {
+                  ToastService.showToast(e.toString(), type: 'error');
+                }
               },
               style: OutlinedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,

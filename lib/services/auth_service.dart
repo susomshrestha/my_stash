@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_stash/exceptions/custom_exception.dart';
 import 'package:my_stash/models/user_model.dart';
-import 'package:my_stash/pages/login.dart';
-import 'package:my_stash/services/toast_service.dart';
 
 class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -52,17 +50,13 @@ class AuthService {
             displayName: user.displayName ?? 'User',
             email: user.email!,
             photoUrl: user.photoURL ?? '');
+      } else {
+        throw CustomException("User not found");
       }
-
-      throw CustomException("User not found");
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
-        throw CustomException("Email/Password is invalid.");
-      }
+      throw CustomException("Email/Password is invalid.");
     } catch (e) {
       rethrow;
-    } finally {
-      throw CustomException("Failed. Please Try Again Later.");
     }
   }
 
@@ -88,32 +82,58 @@ class AuthService {
         throw CustomException("Failed to authenticate with Google");
       }
 
-      return UserModel(
-          id: googleUser.id,
-          displayName: googleUser.displayName ?? 'User',
-          email: googleUser.email,
-          photoUrl: googleUser.photoUrl ?? '');
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Sign in to Firebase with the credential
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      User? user = userCredential.user;
+
+      // Return the UserModel if sign-in was successful
+      if (user != null) {
+        // Check if user document exists and set it if not
+        DocumentReference userDoc =
+            FirebaseFirestore.instance.collection('users').doc(user.uid);
+        DocumentSnapshot docSnapshot = await userDoc.get();
+
+        if (!docSnapshot.exists) {
+          await userDoc.set(
+              {
+                'email': user.email,
+                'displayName': user.displayName ?? 'User',
+                'createdAt': Timestamp.now(),
+                'photoUrl': user.photoURL
+              },
+              SetOptions(
+                  merge:
+                      true)); // Use merge to ensure document is created if absent
+        }
+
+        return UserModel(
+          id: user.uid,
+          displayName: user.displayName ?? 'User',
+          email: user.email!,
+          photoUrl: user.photoURL ?? '',
+        );
+      }
+
+      throw CustomException("User not found");
     } catch (e) {
       rethrow;
     }
   }
 
-  // Sign out from Google
+  // Sign out
   Future<void> singOut(BuildContext context) async {
     try {
       // TODO: check if user login in provider
       await _googleSignIn.signOut();
       await FirebaseAuth.instance.signOut();
-      if (context.mounted) {
-        ToastService.showToast("Successfully signed out.", type: 'success');
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => LoginPage()));
-      }
     } catch (e) {
-      if (context.mounted) {
-        ToastService.showToast("Error signing out: ${e.toString()}",
-            type: 'error');
-      }
+      throw CustomException("Something went wrong.");
     }
   }
 }

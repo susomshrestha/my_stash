@@ -3,6 +3,7 @@ import 'package:my_stash/exceptions/custom_exception.dart';
 import 'package:my_stash/models/password_model.dart';
 import 'package:my_stash/models/question_answer.dart';
 import 'package:my_stash/models/user_model.dart';
+import 'package:my_stash/providers/passwords_provider.dart';
 import 'package:my_stash/providers/user_provider.dart';
 import 'package:my_stash/services/password_service.dart';
 import 'package:my_stash/services/toast_service.dart';
@@ -276,9 +277,11 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
         UserModel? user = userProvider.user;
 
         if (user != null) {
+          final passwordProvider =
+              Provider.of<PasswordsProvider>(context, listen: false);
           try {
             if (appTitle == 'Add') {
-              await _passwordService.addPassword(
+              final addedPassword = await _passwordService.addPassword(
                   PasswordModel(
                       title: _titleController.text,
                       username: _userController.text,
@@ -286,6 +289,8 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
                       password: _passwordController.text,
                       extra: questionAnswerData),
                   user.id);
+
+              passwordProvider.addNewPassword(addedPassword);
               ToastService.showToast("Added successful.", type: 'success');
             } else {
               await _passwordService.updatePassword(

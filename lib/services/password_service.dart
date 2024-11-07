@@ -5,7 +5,8 @@ import 'package:my_stash/models/password_model.dart';
 class PasswordService {
   final db = FirebaseFirestore.instance;
 
-  Future<void> addPassword(PasswordModel password, String userId) async {
+  Future<PasswordModel> addPassword(
+      PasswordModel password, String userId) async {
     try {
       final querySnapshot = await db
           .collection("users")
@@ -18,11 +19,21 @@ class PasswordService {
         throw CustomException(
             "A password with the title '${password.title}' already exists.");
       }
-      await db
+      final addedPasswordRef = await db
           .collection("users")
           .doc(userId)
           .collection("passwords")
           .add(password.toJson());
+
+      final addedPasswordSnapshot = await addedPasswordRef.get();
+
+      // Check if the document exists and print the data
+      if (addedPasswordSnapshot.exists) {
+        final addedPasswordData = addedPasswordSnapshot.data();
+        return PasswordModel.fromJson(addedPasswordData!, addedPasswordRef.id);
+      } else {
+        throw CustomException("Password cannot be found.");
+      }
     } catch (e) {
       rethrow;
     }
@@ -42,9 +53,46 @@ class PasswordService {
     }
   }
 
-  Future<List<PasswordModel>> getPasswordTitlesWithIds(String userId) async {
+  Future<void> deletePassword(String userId, String passwordId) async {
     try {
-      final snapshot = await FirebaseFirestore.instance
+      await db
+          .collection("users")
+          .doc(userId)
+          .collection("passwords")
+          .doc(passwordId)
+          .delete();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<PasswordModel>> searchPassword(
+      String userId, String searchQuery) async {
+    try {
+      final snapshot = await db
+          .collection("users")
+          .doc(userId)
+          .collection("passwords")
+          .where("title", isGreaterThanOrEqualTo: searchQuery)
+          .where("title",
+              isLessThanOrEqualTo:
+                  '$searchQuery\uf8ff') // Ensures search is case-insensitive and matches prefix
+          .get();
+
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return PasswordModel.fromJson(data, doc.id);
+      }).toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<PasswordModel>> getPasswordList(String userId) async {
+    try {
+      // await db.collection('users').get();
+
+      final snapshot = await db
           .collection('users')
           .doc(userId)
           .collection('passwords')
@@ -56,6 +104,9 @@ class PasswordService {
         return PasswordModel.fromJson(data, doc.id);
       }).toList();
     } catch (e) {
+      print("========================================");
+      print(e.toString());
+      print("========================================");
       rethrow;
     }
   }

@@ -40,6 +40,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       UserModel user = await _authService.login(
           _emailController.text, _passwordController.text);
+
       if (mounted) {
         final userProvider = Provider.of<UserProvider>(context, listen: false);
         userProvider.setUser(user);
@@ -50,9 +51,10 @@ class _LoginPageState extends State<LoginPage> {
             context, MaterialPageRoute(builder: (context) => const HomePage()));
       }
     } on CustomException catch (e) {
-      ToastService.showToast(e.toString(), type: "error");
+      ToastService.showToast(e.message, type: "error");
     } catch (e) {
-      ToastService.showToast("Failed to Login.", type: "error");
+      ToastService.showToast("Failed to Login. Please try again later.",
+          type: "error");
     }
   }
 

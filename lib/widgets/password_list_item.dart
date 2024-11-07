@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_stash/models/password_model.dart';
 import 'package:my_stash/pages/password_detail.dart';
+import 'package:my_stash/providers/passwords_provider.dart';
+import 'package:provider/provider.dart';
 
 class PasswordListItem extends StatelessWidget {
   final PasswordModel pwd;
@@ -12,12 +14,16 @@ class PasswordListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final passwordProvider =
+        Provider.of<PasswordsProvider>(context, listen: false);
+
     return GestureDetector(
       onTap: () {
+        passwordProvider.setPassword(pwd);
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PasswordDetailPage(password: pwd),
+            builder: (context) => const PasswordDetailPage(),
           ),
         );
       },

@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:my_stash/models/password_model.dart';
 import 'package:my_stash/pages/manage_password.dart';
+import 'package:my_stash/providers/passwords_provider.dart';
+import 'package:my_stash/providers/user_provider.dart';
+import 'package:my_stash/services/password_service.dart';
+import 'package:my_stash/services/toast_service.dart';
 import 'package:my_stash/widgets/field_row.dart';
+import 'package:provider/provider.dart';
 
 class PasswordDetailPage extends StatelessWidget {
-  final PasswordModel password;
-
-  const PasswordDetailPage({super.key, required this.password});
+  const PasswordDetailPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final passwordProvider =
+        Provider.of<PasswordsProvider>(context, listen: true);
+    final userProvider = Provider.of<UserProvider>(context, listen: true);
+
+    final _passwordService = PasswordService();
+
+    PasswordModel password = passwordProvider.password!;
+
     List<Widget> buildExtraFields() {
       return password.extra.map((extraField) {
         return Padding(
-          padding: EdgeInsets.only(bottom: 20),
+          padding: const EdgeInsets.only(bottom: 20),
           child: FieldRow(
             label: extraField.question,
             value: extraField.answer,
@@ -21,6 +32,42 @@ class PasswordDetailPage extends StatelessWidget {
           ),
         );
       }).toList(); // Convert the iterable to a list
+    }
+
+    void deletePassword() async {
+      try {
+        await _passwordService.deletePassword(
+            userProvider.user!.id, password.id!);
+        if (context.mounted) {
+          Navigator.pop(context, 'OK');
+          Navigator.pop(context);
+        }
+        passwordProvider.deletePassword(password.id!);
+        ToastService.showToast("Successfully delete password", type: "success");
+      } catch (e) {
+        ToastService.showToast("Failed to delete Password", type: "error");
+      }
+    }
+
+    void deletePasswordConfirmation() {
+      showDialog<String>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Delete'),
+          content: const Text('Are you sure you want to continue?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Cancel'),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: deletePassword,
+              child: const Text('Continue'),
+            ),
+          ],
+        ),
+      );
     }
 
     return SafeArea(
@@ -104,7 +151,7 @@ class PasswordDetailPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               FloatingActionButton(
-                onPressed: () {},
+                onPressed: deletePasswordConfirmation,
                 heroTag: 'deleteTag',
                 shape: const CircleBorder(),
                 backgroundColor: Theme.of(context).colorScheme.error,

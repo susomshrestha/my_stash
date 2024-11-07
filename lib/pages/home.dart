@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
               destinations: [
                 NavigationDestination(
                   icon: const Icon(Icons.password),
-                  label: 'Password',
+                  label: 'Passwords',
                   selectedIcon: Icon(Icons.password,
                       color: Theme.of(context)
                           .colorScheme
@@ -64,7 +64,10 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        body: _bodyOptions.elementAt(selectedIndex),
+        body: IndexedStack(
+          index: selectedIndex,
+          children: _bodyOptions,
+        ),
       ),
     );
   }
