@@ -22,12 +22,19 @@ class FieldRow extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Theme.of(context).colorScheme.onSecondary),
             ),
             const SizedBox(
               height: 10,
             ),
-            Text(isHidden ? '*****' : value),
+            Text(
+              isHidden ? '*****' : value,
+              style:
+                  TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+            ),
           ],
         ),
         IconButton(

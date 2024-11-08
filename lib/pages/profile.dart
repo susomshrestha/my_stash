@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_stash/pages/login.dart';
 import 'package:my_stash/providers/passwords_provider.dart';
+import 'package:my_stash/providers/theme_provider.dart';
 import 'package:my_stash/providers/user_provider.dart';
 import 'package:my_stash/services/auth_service.dart';
 import 'package:my_stash/services/toast_service.dart';
@@ -35,17 +37,30 @@ class ProfilePage extends StatelessWidget {
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(50),
                     ),
-                    child: const Icon(
-                      Icons.person,
-                      size: 90,
-                      color: Colors.white,
+                    child: ClipOval(
+                      // This will clip the content to a circular shape
+                      child: userProvider.user?.photoUrl != null
+                          ? Image(
+                              fit: BoxFit
+                                  .cover, // BoxFit.cover ensures the image covers the area
+                              image: NetworkImage(
+                                  '${userProvider.user?.photoUrl}'),
+                              width:
+                                  100, // Make sure image dimensions match container
+                              height: 100,
+                            )
+                          : const Icon(
+                              Icons.person,
+                              size: 90,
+                              color: Colors.white,
+                            ),
                     ),
                   ),
                   const SizedBox(
                     height: 20,
                   ),
                   Text(
-                    'USERNAME',
+                    userProvider.user?.displayName ?? 'USERNAME',
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.onSecondary,
                         fontWeight: FontWeight.bold,
@@ -84,25 +99,154 @@ class ProfilePage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                            width: 1,
-                            color: Theme.of(context).scaffoldBackgroundColor),
+                  GestureDetector(
+                    onTap: () => {
+                      showCupertinoModalPopup(
+                        context: context,
+                        builder: (BuildContext context) {
+                          final themeProvider =
+                              Provider.of<ThemeProvider>(context);
+                          final currentTheme = themeProvider.themeMode;
+
+                          return CupertinoActionSheet(
+                            title: const Text('Choose Theme'),
+                            actions: <Widget>[
+                              CupertinoActionSheetAction(
+                                isDefaultAction:
+                                    currentTheme == ThemeMode.system,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'System (Default)',
+                                      style: TextStyle(
+                                        color: currentTheme == ThemeMode.system
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .primary
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .onSecondary,
+                                      ),
+                                    ),
+                                    if (currentTheme == ThemeMode.system)
+                                      const SizedBox(width: 8),
+                                    if (currentTheme == ThemeMode.system)
+                                      Icon(
+                                        CupertinoIcons.checkmark_circle_fill,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        size: 20,
+                                      ),
+                                  ],
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Provider.of<ThemeProvider>(context,
+                                          listen: false)
+                                      .setTheme(ThemeMode.system);
+                                },
+                              ),
+                              CupertinoActionSheetAction(
+                                isDefaultAction:
+                                    currentTheme == ThemeMode.light,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Light',
+                                      style: TextStyle(
+                                        color: currentTheme == ThemeMode.light
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .primary
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .onSecondary,
+                                      ),
+                                    ),
+                                    if (currentTheme == ThemeMode.light)
+                                      const SizedBox(width: 8),
+                                    if (currentTheme == ThemeMode.light)
+                                      Icon(
+                                        CupertinoIcons.checkmark_circle_fill,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        size: 20,
+                                      ),
+                                  ],
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Provider.of<ThemeProvider>(context,
+                                          listen: false)
+                                      .setTheme(ThemeMode.light);
+                                },
+                              ),
+                              CupertinoActionSheetAction(
+                                isDefaultAction: currentTheme == ThemeMode.dark,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Dark',
+                                      style: TextStyle(
+                                        color: currentTheme == ThemeMode.dark
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .primary
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .onSecondary,
+                                      ),
+                                    ),
+                                    if (currentTheme == ThemeMode.dark)
+                                      const SizedBox(width: 8),
+                                    if (currentTheme == ThemeMode.dark)
+                                      Icon(
+                                        CupertinoIcons.checkmark_circle_fill,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        size: 20,
+                                      ),
+                                  ],
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Provider.of<ThemeProvider>(context,
+                                          listen: false)
+                                      .setTheme(ThemeMode.dark);
+                                },
+                              ),
+                            ],
+                          );
+                        },
                       ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Dark Mode',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSecondary),
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                              width: 1,
+                              color: Theme.of(context).scaffoldBackgroundColor),
                         ),
-                        const Icon(Icons.chevron_right)
-                      ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Theme',
+                            style: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.onSecondary),
+                          ),
+                          const Icon(Icons.chevron_right)
+                        ],
+                      ),
                     ),
                   ),
                   Container(
