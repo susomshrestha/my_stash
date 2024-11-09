@@ -82,7 +82,7 @@ class _PasswordPageState extends State<PasswordPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const ManagePasswordPage()),
+            MaterialPageRoute(builder: (context) => ManagePasswordPage()),
           );
         },
         heroTag: 'addTag',

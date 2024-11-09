@@ -27,7 +27,7 @@ class PasswordService {
 
       final addedPasswordSnapshot = await addedPasswordRef.get();
 
-      // Check if the document exists and print the data
+      // Check if the document exists
       if (addedPasswordSnapshot.exists) {
         final addedPasswordData = addedPasswordSnapshot.data();
         return PasswordModel.fromJson(addedPasswordData!, addedPasswordRef.id);
@@ -39,15 +39,34 @@ class PasswordService {
     }
   }
 
-  Future<void> updatePassword(
+  Future<PasswordModel> updatePassword(
       PasswordModel password, String userId, String passwordId) async {
     try {
+      // Update the password document
       await db
           .collection("users")
           .doc(userId)
           .collection("passwords")
           .doc(passwordId)
           .update(password.toJson());
+
+      // Retrieve the updated password document
+      final updatedPasswordSnapshot = await db
+          .collection("users")
+          .doc(userId)
+          .collection("passwords")
+          .doc(passwordId)
+          .get();
+
+      // Check if the document exists
+      if (updatedPasswordSnapshot.exists) {
+        final updatedPasswordData = updatedPasswordSnapshot.data();
+
+        // Convert the snapshot back to a PasswordModel
+        return PasswordModel.fromJson(updatedPasswordData!, passwordId);
+      } else {
+        throw CustomException("Updated password cannot be found.");
+      }
     } catch (e) {
       rethrow;
     }

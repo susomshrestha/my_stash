@@ -27,6 +27,17 @@ class PasswordsProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void editPassword(PasswordModel pwd, String id) {
+    final index = _passwordList.indexWhere((p) => p.id == id);
+
+    // If the password with the given ID is found
+    if (index != -1) {
+      // Replace the existing password with the new one
+      _passwordList[index] = pwd;
+      notifyListeners();
+    }
+  }
+
   void deletePassword(String id) {
     final index = _passwordList.indexWhere((element) => element.id == id);
     if (index > -1) {

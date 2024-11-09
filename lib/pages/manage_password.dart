@@ -5,7 +5,7 @@ import 'package:my_stash/models/question_answer.dart';
 import 'package:my_stash/models/user_model.dart';
 import 'package:my_stash/providers/passwords_provider.dart';
 import 'package:my_stash/providers/user_provider.dart';
-import 'package:my_stash/services/password_service.dart';
+import 'package:my_stash/services/password_form_service.dart';
 import 'package:my_stash/services/toast_service.dart';
 import 'package:my_stash/services/validator_service.dart';
 import 'package:my_stash/widgets/help_dialog.dart';
@@ -68,7 +68,7 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
   @override
   Widget build(BuildContext context) {
     final ValidatorService validator = ValidatorService();
-    final PasswordService _passwordService = PasswordService();
+    final _passwordFormService = PasswordFormService();
 
     void addSecurityQuestion() {
       setState(() {
@@ -260,55 +260,51 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
       ),
     );
 
-    final String appTitle = widget.password != null
-        ? 'Edit' // Display the passed data
-        : 'Add';
+    final String appTitle = widget.password != null ? 'Edit' : 'Add';
 
     void saveForm() async {
       if (_manageFormKey.currentState!.validate()) {
-        // Get all extra fields
-        List<QuestionAnswerModel> questionAnswerData = questionAnswers
-            .map((q) => QuestionAnswerModel(
-                question: q.questionController.text,
-                answer: q.answerController.text))
-            .toList();
-
         final userProvider = Provider.of<UserProvider>(context, listen: false);
+        final passwordProvider =
+            Provider.of<PasswordsProvider>(context, listen: false);
         UserModel? user = userProvider.user;
 
         if (user != null) {
-          final passwordProvider =
-              Provider.of<PasswordsProvider>(context, listen: false);
           try {
-            if (appTitle == 'Add') {
-              final addedPassword = await _passwordService.addPassword(
-                  PasswordModel(
-                      title: _titleController.text,
-                      username: _userController.text,
-                      email: _emailController.text,
-                      password: _passwordController.text,
-                      extra: questionAnswerData),
-                  user.id);
+            List<QuestionAnswerModel> extraFields = questionAnswers
+                .map((q) => QuestionAnswerModel(
+                    question: q.questionController.text,
+                    answer: q.answerController.text))
+                .toList();
 
+            if (appTitle == 'Add') {
+              final addedPassword = await _passwordFormService.addNewPassword(
+                  userId: user.id,
+                  title: _titleController.text,
+                  username: _userController.text,
+                  email: _emailController.text,
+                  password: _passwordController.text,
+                  extraFields: extraFields);
               passwordProvider.addNewPassword(addedPassword);
               ToastService.showToast("Added successful.", type: 'success');
             } else {
-              await _passwordService.updatePassword(
-                  PasswordModel(
+              final editedPassword =
+                  await _passwordFormService.updateExistingPassword(
+                      userId: user.id,
+                      passwordModel: widget.password!,
                       title: _titleController.text,
                       username: _userController.text,
                       email: _emailController.text,
                       password: _passwordController.text,
-                      extra: questionAnswerData),
-                  user.id,
-                  widget.password!.id!);
+                      extraFields: extraFields);
+              passwordProvider.editPassword(
+                  editedPassword, widget.password!.id!);
+              passwordProvider.setPassword(editedPassword);
               ToastService.showToast("Updated successful.", type: 'success');
             }
             Navigator.pop(context);
           } on CustomException catch (ce) {
             ToastService.showToast(ce.toString(), type: 'error');
-          } catch (e) {
-            ToastService.showToast("Failed. Please try again.", type: 'error');
           }
         }
       }

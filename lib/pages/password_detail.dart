@@ -128,13 +128,13 @@ class PasswordDetailPage extends StatelessWidget {
                       ],
                       FieldRow(label: 'EMAIL', value: password.email),
                       const SizedBox(height: 20),
-                      const FieldRow(
+                      FieldRow(
                         label: 'PASSWORD',
-                        value: "*********",
+                        value: password.password,
                         isHidden: true,
                       ),
                       const SizedBox(height: 20),
-                      if (password.extra.length > 0) ...[
+                      if (password.extra.isNotEmpty) ...[
                         Text(
                           'Extra',
                           style: TextStyle(

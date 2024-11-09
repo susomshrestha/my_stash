@@ -41,7 +41,7 @@ class PasswordModel {
 
 class QuestionAnswerModel {
   final String question;
-  final String answer;
+  String answer;
 
   QuestionAnswerModel({required this.question, required this.answer});
 
