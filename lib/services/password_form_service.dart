@@ -54,35 +54,59 @@ class PasswordFormService {
 
   Future<PasswordModel> updateExistingPassword({
     required String userId,
-    required PasswordModel passwordModel,
+    required PasswordModel oldPassword,
     required String title,
     required String username,
     required String email,
     required String password,
-    required List<QuestionAnswerModel> extraFields,
+    required List<QuestionAnswerModel> editedExtraFields,
   }) async {
     final key = await _keyService.getKeyFromSecureStorage(userId);
     var encryptedPassword = password;
-    if (password != passwordModel.password) {
+    if (password != oldPassword.password) {
       encryptedPassword = _cryptoService.encrypt(
           password, Uint8List.fromList(base64Decode(key!)));
     }
 
-    // TODO: need to check if password is not being encrypted multiple times
-    if (!compareLists(extraFields, passwordModel.extra)) {
-      for (var questionAnswer in extraFields) {
-        questionAnswer.answer = _cryptoService.encrypt(
-            questionAnswer.answer, Uint8List.fromList(base64Decode(key!)));
+    final existingFieldsMap = {
+      for (var field in oldPassword.extra) field.question: field.answer
+    };
+
+    final updatedFields = <QuestionAnswerModel>[];
+
+    for (var editedField in editedExtraFields) {
+      String finalAnswer;
+      final existingAnswer = existingFieldsMap[editedField.question];
+
+      if (existingAnswer != null) {
+        if (editedField.answer != existingAnswer) {
+          // answer changed
+          finalAnswer = _cryptoService.encrypt(
+              editedField.answer, Uint8List.fromList(base64Decode(key!)));
+        } else {
+          // answer unchanged
+          finalAnswer = existingAnswer;
+        }
+      } else {
+        // new field
+        finalAnswer = _cryptoService.encrypt(
+            editedField.answer, Uint8List.fromList(base64Decode(key!)));
       }
+
+      updatedFields.add(QuestionAnswerModel(
+        question: editedField.question,
+        answer: finalAnswer,
+      ));
     }
+
     return await _passwordService.updatePassword(
         PasswordModel(
             title: title,
             username: username,
             email: email,
             password: encryptedPassword,
-            extra: extraFields),
+            extra: updatedFields),
         userId,
-        passwordModel.id!);
+        oldPassword.id!);
   }
 }

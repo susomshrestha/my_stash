@@ -70,6 +70,8 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
     final ValidatorService validator = ValidatorService();
     final _passwordFormService = PasswordFormService();
 
+    String orgPasswordText = '';
+
     void addSecurityQuestion() {
       setState(() {
         questionAnswers.add(QuestionAnswer());
@@ -127,13 +129,29 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
             decoration: buildInputDecoration('Email', Icons.email_outlined),
           ),
           const SizedBox(height: 10),
-          TextFormField(
-            controller: _passwordController,
-            validator: (value) =>
-                validator.requiredFieldValidator(value, 'Password'),
-            obscureText: true,
-            style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
-            decoration: buildInputDecoration('Password', Icons.password),
+          Focus(
+            onFocusChange: (hasFocus) {
+              if (hasFocus) {
+                // Store original text and clear field when focused
+                orgPasswordText = _passwordController.text;
+                _passwordController.text = '';
+              } else {
+                // Restore original text if field is empty when focus is lost
+                if (_passwordController.text.isEmpty && orgPasswordText != '') {
+                  _passwordController.text = orgPasswordText;
+                  orgPasswordText = '';
+                }
+              }
+            },
+            child: TextFormField(
+              controller: _passwordController,
+              validator: (value) =>
+                  validator.requiredFieldValidator(value, 'Password'),
+              obscureText: true,
+              style:
+                  TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+              decoration: buildInputDecoration('Password', Icons.password),
+            ),
           ),
         ],
       );
@@ -189,8 +207,25 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
                   const SizedBox(height: 24), // Space for the remove button
                   TextFormField(
                     controller: qa.questionController,
-                    validator: (value) =>
-                        validator.requiredFieldValidator(value, 'Question'),
+                    validator: (value) {
+                      validator.requiredFieldValidator(value, 'Question');
+
+                      final currentQuestion = value?.trim().toLowerCase() ?? '';
+                      final duplicateFound = questionAnswers
+                          .asMap()
+                          .entries
+                          .any((entry) =>
+                              entry.key != idx &&
+                              entry.value.questionController.text
+                                      .trim()
+                                      .toLowerCase() ==
+                                  currentQuestion);
+
+                      if (duplicateFound) {
+                        return 'This question already exists';
+                      }
+                      return null;
+                    },
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.onSecondary),
                     decoration: InputDecoration(
@@ -202,19 +237,37 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
                           color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
-                  TextFormField(
-                    controller: qa.answerController,
-                    validator: (value) =>
-                        validator.requiredFieldValidator(value, 'Answer'),
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSecondary),
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.question_answer,
+                  Focus(
+                    onFocusChange: (hasFocus) {
+                      if (hasFocus) {
+                        // Store original text and clear field when focused
+                        orgPasswordText = qa.answerController.text;
+                        qa.answerController.text = '';
+                      } else {
+                        // Restore original text if field is empty when focus is lost
+                        if (qa.answerController.text.isEmpty &&
+                            orgPasswordText != '') {
+                          qa.answerController.text = orgPasswordText;
+                          orgPasswordText = '';
+                        }
+                      }
+                    },
+                    child: TextFormField(
+                      controller: qa.answerController,
+                      validator: (value) =>
+                          validator.requiredFieldValidator(value, 'Answer'),
+                      obscureText: true,
+                      style: TextStyle(
                           color: Theme.of(context).colorScheme.onSecondary),
-                      hintText: 'Answer',
-                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                      hintStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface),
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.question_answer,
+                            color: Theme.of(context).colorScheme.onSecondary),
+                        hintText: 'Answer',
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 16),
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface),
+                      ),
                     ),
                   ),
                 ],
@@ -291,12 +344,12 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
               final editedPassword =
                   await _passwordFormService.updateExistingPassword(
                       userId: user.id,
-                      passwordModel: widget.password!,
+                      oldPassword: widget.password!,
                       title: _titleController.text,
                       username: _userController.text,
                       email: _emailController.text,
                       password: _passwordController.text,
-                      extraFields: extraFields);
+                      editedExtraFields: extraFields);
               passwordProvider.editPassword(
                   editedPassword, widget.password!.id!);
               passwordProvider.setPassword(editedPassword);
