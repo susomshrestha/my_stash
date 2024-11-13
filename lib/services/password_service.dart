@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:my_stash/constants/strings.dart';
 import 'package:my_stash/exceptions/custom_exception.dart';
 import 'package:my_stash/models/password_model.dart';
 
@@ -65,7 +66,7 @@ class PasswordService {
         // Convert the snapshot back to a PasswordModel
         return PasswordModel.fromJson(updatedPasswordData!, passwordId);
       } else {
-        throw CustomException("Updated password cannot be found.");
+        throw CustomException(AppStrings.passwordNotFound);
       }
     } catch (e) {
       rethrow;
@@ -123,9 +124,6 @@ class PasswordService {
         return PasswordModel.fromJson(data, doc.id);
       }).toList();
     } catch (e) {
-      print("========================================");
-      print(e.toString());
-      print("========================================");
       rethrow;
     }
   }

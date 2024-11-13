@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_stash/constants/strings.dart';
 import 'package:my_stash/models/user_model.dart';
 import 'package:my_stash/pages/home.dart';
 import 'package:my_stash/pages/key_input.dart';
@@ -32,7 +33,7 @@ class NavigationService {
       if (hasKeyInFirebase) {
         String? syncedKey = await _keyService.syncKeyFromFirebase(userId);
         if (syncedKey != null) {
-          ToastService.showToast("Encryption key synchronized from cloud");
+          ToastService.showToast(AppStrings.keySyncMsg);
           return true;
         }
       }
@@ -40,7 +41,7 @@ class NavigationService {
       return false;
     } catch (e) {
       ToastService.showToast(
-        "Error checking encryption key. Please try again.",
+        AppStrings.keySyncFailMsg,
         type: ToastificationType.error,
       );
       return false;
@@ -49,23 +50,15 @@ class NavigationService {
 
   Future<void> handleAuthenticatedNavigation(
     BuildContext context,
-    UserModel user, {
-    bool replace = true,
-  }) async {
+    UserModel user,
+  ) async {
     bool hasKey = await _checkForKey(user.id);
 
     if (hasKey) {
-      if (replace) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
-        );
-      } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
-        );
-      }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
     } else {
       Navigator.push(
         context,

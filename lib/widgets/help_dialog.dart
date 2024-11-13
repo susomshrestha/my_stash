@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_stash/constants/strings.dart';
 
 Future<void> showHelpDialog(BuildContext context) async {
   Widget buildExampleItem(String title, String subtitle) {
@@ -43,7 +44,7 @@ Future<void> showHelpDialog(BuildContext context) async {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Security Questions Examples:',
+                AppStrings.securityExampleText,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.primary,
@@ -51,12 +52,12 @@ Future<void> showHelpDialog(BuildContext context) async {
               ),
               const SizedBox(height: 8),
               buildExampleItem(
-                'Question: What was your first pet\'s name?',
-                'Answer: Buddy',
+                AppStrings.securityQues,
+                AppStrings.securityAns,
               ),
               const SizedBox(height: 16),
               Text(
-                'PIN/Code Examples:',
+                AppStrings.pinExampleText,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.primary,
@@ -64,15 +65,15 @@ Future<void> showHelpDialog(BuildContext context) async {
               ),
               const SizedBox(height: 8),
               buildExampleItem(
-                'Question: ATM PIN',
-                'Answer: 1234',
+                AppStrings.pinQues,
+                AppStrings.pinAns,
               ),
             ],
           ),
         ),
         actions: [
           TextButton(
-            child: const Text('Close'),
+            child: const Text(AppStrings.close),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ],

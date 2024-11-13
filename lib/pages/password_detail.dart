@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_stash/constants/strings.dart';
 import 'package:my_stash/models/password_model.dart';
 import 'package:my_stash/pages/manage_password.dart';
 import 'package:my_stash/providers/passwords_provider.dart';
@@ -42,13 +43,13 @@ class PasswordDetailPage extends StatelessWidget {
         await _passwordService.deletePassword(
             userProvider.user!.id, password.id!);
         if (context.mounted) {
-          Navigator.pop(context, 'OK');
+          Navigator.pop(context, AppStrings.ok);
           Navigator.pop(context);
         }
         passwordProvider.deletePassword(password.id!);
-        ToastService.showToast("Successfully delete password");
+        ToastService.showToast(AppStrings.successPasswordDelete);
       } catch (e) {
-        ToastService.showToast("Failed to delete Password",
+        ToastService.showToast(AppStrings.failedPasswordDelete,
             type: ToastificationType.error);
       }
       LoadingScreen.instance().hide();
@@ -59,16 +60,16 @@ class PasswordDetailPage extends StatelessWidget {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) => AlertDialog(
-          title: const Text('Delete'),
-          content: const Text('Are you sure you want to continue?'),
+          title: const Text(AppStrings.delete),
+          content: const Text(AppStrings.continueConfirmation),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context, 'Cancel'),
-              child: const Text('Cancel'),
+              onPressed: () => Navigator.pop(context, AppStrings.cancel),
+              child: const Text(AppStrings.cancel),
             ),
             TextButton(
               onPressed: deletePassword,
-              child: const Text('Continue'),
+              child: const Text(AppStrings.cont),
             ),
           ],
         ),
@@ -128,20 +129,24 @@ class PasswordDetailPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (password.username.isNotEmpty) ...[
-                        FieldRow(label: 'USERNAME', value: password.username),
+                        FieldRow(
+                            label: AppStrings.username.toUpperCase(),
+                            value: password.username),
                         const SizedBox(height: 20),
                       ],
-                      FieldRow(label: 'EMAIL', value: password.email),
+                      FieldRow(
+                          label: AppStrings.email.toUpperCase(),
+                          value: password.email),
                       const SizedBox(height: 20),
                       FieldRow(
-                        label: 'PASSWORD',
+                        label: AppStrings.password.toUpperCase(),
                         value: password.password,
                         isHidden: true,
                       ),
                       const SizedBox(height: 20),
                       if (password.extra.isNotEmpty) ...[
                         Text(
-                          'Extra',
+                          AppStrings.extra.toUpperCase(),
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onSecondary,
                             fontSize: 16,
@@ -170,7 +175,7 @@ class PasswordDetailPage extends StatelessWidget {
                     ),
                     icon: const Icon(Icons.delete),
                     label: const Text(
-                      'Delete Password',
+                      AppStrings.deletePassword,
                       style: TextStyle(fontSize: 16),
                     ),
                   ),

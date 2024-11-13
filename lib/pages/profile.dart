@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_stash/constants/strings.dart';
 import 'package:my_stash/pages/login.dart';
 import 'package:my_stash/providers/passwords_provider.dart';
 import 'package:my_stash/providers/theme_provider.dart';
@@ -62,7 +63,8 @@ class ProfilePage extends StatelessWidget {
                     height: 20,
                   ),
                   Text(
-                    userProvider.user?.displayName ?? 'USERNAME',
+                    userProvider.user?.displayName ??
+                        AppStrings.username.toUpperCase(),
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.onSecondary,
                         fontWeight: FontWeight.bold,
@@ -93,7 +95,7 @@ class ProfilePage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Account',
+                          AppStrings.account,
                           style: TextStyle(
                               color: Theme.of(context).colorScheme.onSecondary),
                         ),
@@ -111,7 +113,7 @@ class ProfilePage extends StatelessWidget {
                           final currentTheme = themeProvider.themeMode;
 
                           return CupertinoActionSheet(
-                            title: const Text('Choose Theme'),
+                            title: const Text(AppStrings.chooseTheme),
                             actions: <Widget>[
                               CupertinoActionSheetAction(
                                 isDefaultAction:
@@ -120,7 +122,7 @@ class ProfilePage extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'System (Default)',
+                                      AppStrings.systemDefault,
                                       style: TextStyle(
                                         color: currentTheme == ThemeMode.system
                                             ? Theme.of(context)
@@ -157,7 +159,7 @@ class ProfilePage extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'Light',
+                                      AppStrings.light,
                                       style: TextStyle(
                                         color: currentTheme == ThemeMode.light
                                             ? Theme.of(context)
@@ -193,7 +195,7 @@ class ProfilePage extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'Dark',
+                                      AppStrings.dark,
                                       style: TextStyle(
                                         color: currentTheme == ThemeMode.dark
                                             ? Theme.of(context)
@@ -241,7 +243,7 @@ class ProfilePage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Theme',
+                            AppStrings.theme,
                             style: TextStyle(
                                 color:
                                     Theme.of(context).colorScheme.onSecondary),
@@ -264,7 +266,7 @@ class ProfilePage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Notification',
+                          AppStrings.notification,
                           style: TextStyle(
                               color: Theme.of(context).colorScheme.onSecondary),
                         ),
@@ -283,7 +285,7 @@ class ProfilePage extends StatelessWidget {
                 LoadingScreen.instance().show(context: context);
                 try {
                   await _googleAuthService.singOut(context);
-                  ToastService.showToast("Successfully signed out.");
+                  ToastService.showToast(AppStrings.successLogOut);
                   if (context.mounted) {
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) => LoginPage()));
@@ -303,7 +305,7 @@ class ProfilePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(5)),
               ),
               child: const Text(
-                'Logout',
+                AppStrings.logout,
                 style: TextStyle(color: Colors.white),
               ),
             ),

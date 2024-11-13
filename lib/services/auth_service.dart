@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:my_stash/constants/strings.dart';
 import 'package:my_stash/exceptions/custom_exception.dart';
 import 'package:my_stash/models/user_model.dart';
 
@@ -28,9 +29,9 @@ class AuthService {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        throw CustomException("The password is too weak.");
+        throw CustomException(AppStrings.weakPasswordMsg);
       } else if (e.code == 'email-already-in-use') {
-        throw CustomException("Email is already in use.");
+        throw CustomException(AppStrings.emailUseMsg);
       }
     } catch (e) {
       rethrow;
@@ -51,10 +52,10 @@ class AuthService {
             email: user.email!,
             photoUrl: user.photoURL ?? '');
       } else {
-        throw CustomException("User not found");
+        throw CustomException(AppStrings.userNotFound);
       }
     } on FirebaseAuthException catch (e) {
-      throw CustomException("Email/Password is invalid.");
+      throw CustomException(AppStrings.credInvalidMsg);
     } catch (e) {
       rethrow;
     }
@@ -69,7 +70,7 @@ class AuthService {
       // Check if the sign-in was canceled or failed
       if (googleUser == null) {
         // User canceled the sign-in, handle accordingly
-        throw CustomException("Sign in aborted by user.");
+        throw CustomException(AppStrings.userAbortSignIn);
       }
 
       // Obtain the auth details from the request
@@ -79,7 +80,7 @@ class AuthService {
       if (googleAuth == null || googleAuth.accessToken == null) {
         // Authentication failed, handle accordingly
 
-        throw CustomException("Failed to authenticate with Google");
+        throw CustomException(AppStrings.googleAuthFail);
       }
 
       final OAuthCredential credential = GoogleAuthProvider.credential(
@@ -120,7 +121,7 @@ class AuthService {
         );
       }
 
-      throw CustomException("User not found");
+      throw CustomException(AppStrings.userNotFound);
     } catch (e) {
       rethrow;
     }
@@ -133,7 +134,7 @@ class AuthService {
       await _googleSignIn.signOut();
       await FirebaseAuth.instance.signOut();
     } catch (e) {
-      throw CustomException("Something went wrong.");
+      throw CustomException(AppStrings.singOutFail);
     }
   }
 }

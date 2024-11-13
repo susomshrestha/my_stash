@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_stash/constants/strings.dart';
 import 'package:my_stash/exceptions/custom_exception.dart';
 import 'package:my_stash/models/password_model.dart';
 import 'package:my_stash/models/question_answer.dart';
@@ -112,23 +113,24 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
           TextFormField(
             controller: _titleController,
             validator: (value) =>
-                validator.requiredFieldValidator(value, 'Title'),
+                validator.requiredFieldValidator(value, AppStrings.title),
             style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
-            decoration: buildInputDecoration('Title', Icons.title),
+            decoration: buildInputDecoration(AppStrings.title, Icons.title),
           ),
           const SizedBox(height: 10),
           TextFormField(
             controller: _userController,
             style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
-            decoration:
-                buildInputDecoration('Username', Icons.person_3_outlined),
+            decoration: buildInputDecoration(
+                AppStrings.username, Icons.person_3_outlined),
           ),
           const SizedBox(height: 10),
           TextFormField(
             controller: _emailController,
             validator: validator.emailValidator,
             style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
-            decoration: buildInputDecoration('Email', Icons.email_outlined),
+            decoration:
+                buildInputDecoration(AppStrings.email, Icons.email_outlined),
           ),
           const SizedBox(height: 10),
           Focus(
@@ -148,11 +150,12 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
             child: TextFormField(
               controller: _passwordController,
               validator: (value) =>
-                  validator.requiredFieldValidator(value, 'Password'),
+                  validator.requiredFieldValidator(value, AppStrings.password),
               obscureText: true,
               style:
                   TextStyle(color: Theme.of(context).colorScheme.onSecondary),
-              decoration: buildInputDecoration('Password', Icons.password),
+              decoration:
+                  buildInputDecoration(AppStrings.password, Icons.password),
             ),
           ),
         ],
@@ -166,7 +169,7 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
           Row(
             children: [
               Text(
-                'Extra',
+                AppStrings.extra,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSecondary,
                   fontSize: 16,
@@ -210,7 +213,8 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
                   TextFormField(
                     controller: qa.questionController,
                     validator: (value) {
-                      validator.requiredFieldValidator(value, 'Question');
+                      validator.requiredFieldValidator(
+                          value, AppStrings.question);
 
                       final currentQuestion = value?.trim().toLowerCase() ?? '';
                       final duplicateFound = questionAnswers
@@ -224,7 +228,7 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
                                   currentQuestion);
 
                       if (duplicateFound) {
-                        return 'This question already exists';
+                        return AppStrings.questionAlreadyExists;
                       }
                       return null;
                     },
@@ -233,7 +237,7 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.question_mark,
                           color: Theme.of(context).colorScheme.onSecondary),
-                      hintText: 'Question',
+                      hintText: AppStrings.question,
                       contentPadding: const EdgeInsets.symmetric(vertical: 16),
                       hintStyle: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface),
@@ -256,15 +260,15 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
                     },
                     child: TextFormField(
                       controller: qa.answerController,
-                      validator: (value) =>
-                          validator.requiredFieldValidator(value, 'Answer'),
+                      validator: (value) => validator.requiredFieldValidator(
+                          value, AppStrings.answer),
                       obscureText: true,
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.onSecondary),
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.question_answer,
                             color: Theme.of(context).colorScheme.onSecondary),
-                        hintText: 'Answer',
+                        hintText: AppStrings.answer,
                         contentPadding:
                             const EdgeInsets.symmetric(vertical: 16),
                         hintStyle: TextStyle(
@@ -315,7 +319,8 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
       ),
     );
 
-    final String appTitle = widget.password != null ? 'Edit' : 'Add';
+    final String appTitle =
+        widget.password != null ? AppStrings.edit : AppStrings.add;
 
     void saveForm() async {
       if (!(_manageFormKey.currentState?.validate() ?? true)) {
@@ -335,7 +340,7 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
                   answer: q.answerController.text))
               .toList();
 
-          if (appTitle == 'Add') {
+          if (appTitle == AppStrings.add) {
             final addedPassword = await _passwordFormService.addNewPassword(
                 userId: user.id,
                 title: _titleController.text,
@@ -344,7 +349,7 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
                 password: _passwordController.text,
                 extraFields: extraFields);
             passwordProvider.addNewPassword(addedPassword);
-            ToastService.showToast("Added successful.");
+            ToastService.showToast(AppStrings.successPasswordAdd);
           } else {
             final editedPassword =
                 await _passwordFormService.updateExistingPassword(
@@ -357,7 +362,7 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
                     editedExtraFields: extraFields);
             passwordProvider.editPassword(editedPassword, widget.password!.id!);
             passwordProvider.setPassword(editedPassword);
-            ToastService.showToast("Updated successful.");
+            ToastService.showToast(AppStrings.successPasswordEdit);
           }
           Navigator.pop(context);
         }
@@ -395,7 +400,7 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
                           vertical: 16), // Button height
                     ),
                     child: Text(
-                      "Save",
+                      AppStrings.save,
                       style: TextStyle(
                           fontSize: 16,
                           color: Theme.of(context).colorScheme.onPrimary,

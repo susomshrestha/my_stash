@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_stash/constants/strings.dart';
 import 'package:my_stash/pages/home.dart';
 import 'package:my_stash/services/crypto_service.dart';
 import 'package:my_stash/services/key_service.dart';
@@ -36,7 +37,7 @@ class _KeyInputPageState extends State<KeyInputPage> {
 
       if (!mounted) return;
 
-      ToastService.showToast("Encryption key saved successfully");
+      ToastService.showToast(AppStrings.successKeySave);
 
       Navigator.pushReplacement(
         context,
@@ -44,7 +45,7 @@ class _KeyInputPageState extends State<KeyInputPage> {
       );
     } catch (e) {
       ToastService.showToast(
-        "Failed to save encryption key. Please try again.",
+        AppStrings.failedKeySave,
         type: ToastificationType.error,
       );
     } finally {
@@ -58,7 +59,7 @@ class _KeyInputPageState extends State<KeyInputPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Set Encryption Key'),
+        title: const Text(AppStrings.setEncryptionKey),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -68,23 +69,23 @@ class _KeyInputPageState extends State<KeyInputPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text(
-                'Please set your encryption key. This key will be used to encrypt and decrypt your data. Make sure to remember it!',
+                AppStrings.setEncryptionKeyInfo,
                 style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 24),
               TextFormField(
                 controller: _keyController,
                 decoration: const InputDecoration(
-                  labelText: 'Encryption Key',
+                  labelText: AppStrings.encryptionKeyLabel,
                   border: OutlineInputBorder(),
                 ),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter an encryption key';
+                    return AppStrings.encryptionKeyRequiredMessage;
                   }
                   if (value.length < 6) {
-                    return 'Key must be at least 6 characters long';
+                    return AppStrings.encryptionKeyLengthMessage;
                   }
                   return null;
                 },
@@ -94,7 +95,7 @@ class _KeyInputPageState extends State<KeyInputPage> {
                 onPressed: _isLoading ? null : _saveKey,
                 child: _isLoading
                     ? const CircularProgressIndicator()
-                    : const Text('Save Key'),
+                    : const Text(AppStrings.savekeyBtnText),
               ),
             ],
           ),

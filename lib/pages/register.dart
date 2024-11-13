@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:my_stash/constants/strings.dart';
 import 'package:my_stash/exceptions/custom_exception.dart';
 import 'package:my_stash/pages/login.dart';
 import 'package:my_stash/services/auth_service.dart';
@@ -40,7 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
       await _authService.register(_emailController.text,
           _passwordController.text, _nameController.text);
 
-      ToastService.showToast("Registration successful.");
+      ToastService.showToast(AppStrings.successRegister);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginPage()),
@@ -48,7 +49,7 @@ class _RegisterPageState extends State<RegisterPage> {
     } on CustomException catch (ce) {
       ToastService.showToast(ce.toString(), type: ToastificationType.error);
     } catch (e) {
-      ToastService.showToast("Failed. Please Try Again Later.",
+      ToastService.showToast(AppStrings.failedToRegister,
           type: ToastificationType.error);
     }
   }
@@ -64,14 +65,14 @@ class _RegisterPageState extends State<RegisterPage> {
           TextFormField(
             controller: _nameController,
             validator: (value) =>
-                validator.requiredFieldValidator(value, 'Name'),
+                validator.requiredFieldValidator(value, AppStrings.name),
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSecondary,
             ),
             decoration: InputDecoration(
               prefixIcon: Icon(Icons.person_2_outlined,
                   color: Theme.of(context).colorScheme.onSecondary),
-              hintText: 'Name',
+              hintText: AppStrings.name,
               contentPadding: const EdgeInsets.symmetric(vertical: 16),
               hintStyle:
                   TextStyle(color: Theme.of(context).colorScheme.onSurface),
@@ -100,7 +101,7 @@ class _RegisterPageState extends State<RegisterPage> {
             decoration: InputDecoration(
               prefixIcon: Icon(Icons.mail_outline,
                   color: Theme.of(context).colorScheme.onSecondary),
-              hintText: 'Email',
+              hintText: AppStrings.email,
               contentPadding: const EdgeInsets.symmetric(vertical: 16),
               hintStyle:
                   TextStyle(color: Theme.of(context).colorScheme.onSurface),
@@ -130,7 +131,7 @@ class _RegisterPageState extends State<RegisterPage> {
             decoration: InputDecoration(
               prefixIcon: Icon(Icons.password,
                   color: Theme.of(context).colorScheme.onSecondary),
-              hintText: 'Password',
+              hintText: AppStrings.password,
               contentPadding: const EdgeInsets.symmetric(vertical: 16),
               hintStyle:
                   TextStyle(color: Theme.of(context).colorScheme.onSurface),
@@ -159,7 +160,7 @@ class _RegisterPageState extends State<RegisterPage> {
             decoration: InputDecoration(
               prefixIcon: Icon(Icons.password_rounded,
                   color: Theme.of(context).colorScheme.onSecondary),
-              hintText: 'Confirm Password',
+              hintText: AppStrings.confirmPassword,
               contentPadding: const EdgeInsets.symmetric(vertical: 16),
               hintStyle:
                   TextStyle(color: Theme.of(context).colorScheme.onSurface),
@@ -198,7 +199,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   const EdgeInsets.symmetric(vertical: 16), // Button height
             ),
             child: Text(
-              "Register",
+              AppStrings.register,
               style: TextStyle(
                   fontSize: 16,
                   color: Theme.of(context).colorScheme.onPrimary,
@@ -211,12 +212,12 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         RichText(
           text: TextSpan(
-            text: "Already have an account? ",
+            text: AppStrings.alreadyAccountMsg,
             style: TextStyle(
                 color: Theme.of(context).colorScheme.onSecondary, fontSize: 16),
             children: [
               TextSpan(
-                text: 'Login',
+                text: AppStrings.login,
                 style: TextStyle(
                   color: Theme.of(context)
                       .colorScheme

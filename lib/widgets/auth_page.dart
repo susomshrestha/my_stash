@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_stash/constants/strings.dart';
 import 'package:my_stash/exceptions/custom_exception.dart';
 import 'package:my_stash/models/user_model.dart';
 import 'package:my_stash/providers/user_provider.dart';
@@ -31,7 +32,7 @@ class AuthPage extends StatelessWidget {
         final userProvider = Provider.of<UserProvider>(context, listen: false);
         userProvider.setUser(user);
 
-        ToastService.showToast("Sign in successful.");
+        ToastService.showToast(AppStrings.loginSuccessToast);
 
         if (context.mounted) {
           await _navigationService.handleAuthenticatedNavigation(context, user);
@@ -39,7 +40,7 @@ class AuthPage extends StatelessWidget {
       } on CustomException catch (ce) {
         ToastService.showToast(ce.toString(), type: ToastificationType.error);
       } catch (e) {
-        ToastService.showToast("Failed. Please Try Again Later.",
+        ToastService.showToast(AppStrings.loginFailedToast,
             type: ToastificationType.error);
       }
       LoadingScreen.instance().hide();
@@ -61,7 +62,7 @@ class AuthPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'My Stash',
+                    AppStrings.appTitle,
                     style: TextStyle(
                       fontSize: 30,
                       color: Theme.of(context).colorScheme.primary,
@@ -84,7 +85,7 @@ class AuthPage extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Text(
-                          'Or Login with',
+                          AppStrings.orLoginText,
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onSurface,
                           ),

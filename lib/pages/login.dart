@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:my_stash/constants/strings.dart';
 import 'package:my_stash/exceptions/custom_exception.dart';
 import 'package:my_stash/models/user_model.dart';
 import 'package:my_stash/pages/home.dart';
@@ -48,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
         final userProvider = Provider.of<UserProvider>(context, listen: false);
         userProvider.setUser(user);
 
-        ToastService.showToast("Login successful.");
+        ToastService.showToast(AppStrings.loginSuccessToast);
 
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const HomePage()));
@@ -56,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
     } on CustomException catch (e) {
       ToastService.showToast(e.message, type: ToastificationType.error);
     } catch (e) {
-      ToastService.showToast("Failed to Login. Please try again later.",
+      ToastService.showToast(AppStrings.loginFailedToast,
           type: ToastificationType.error);
     }
     LoadingScreen.instance().hide();
@@ -79,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
             decoration: InputDecoration(
               prefixIcon: Icon(Icons.mail_outline,
                   color: Theme.of(context).colorScheme.onSecondary),
-              hintText: 'Email',
+              hintText: AppStrings.email,
               contentPadding: const EdgeInsets.symmetric(vertical: 16),
               hintStyle:
                   TextStyle(color: Theme.of(context).colorScheme.onSurface),
@@ -109,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
             decoration: InputDecoration(
               prefixIcon: Icon(Icons.password,
                   color: Theme.of(context).colorScheme.onSecondary),
-              hintText: 'Password',
+              hintText: AppStrings.password,
               contentPadding: const EdgeInsets.symmetric(vertical: 16),
               hintStyle:
                   TextStyle(color: Theme.of(context).colorScheme.onSurface),
@@ -147,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                   const EdgeInsets.symmetric(vertical: 16), // Button height
             ),
             child: Text(
-              "Login",
+              AppStrings.login,
               style: TextStyle(
                   fontSize: 16,
                   color: Theme.of(context).colorScheme.onPrimary,
@@ -160,12 +161,12 @@ class _LoginPageState extends State<LoginPage> {
         ),
         RichText(
           text: TextSpan(
-            text: "Don't have an account? ",
+            text: AppStrings.noAccountMessage,
             style: TextStyle(
                 fontSize: 16, color: Theme.of(context).colorScheme.onSecondary),
             children: [
               TextSpan(
-                text: 'Register',
+                text: AppStrings.register,
                 style: TextStyle(
                   color: Theme.of(context)
                       .colorScheme

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:my_stash/constants/strings.dart';
 import 'package:my_stash/models/password_model.dart';
 import 'package:my_stash/models/user_model.dart';
 import 'package:my_stash/pages/manage_password.dart';
@@ -66,9 +67,9 @@ class _PasswordPageState extends State<PasswordPage> {
       final passwordProvider =
           Provider.of<PasswordsProvider>(context, listen: false);
       passwordProvider.setPasswordList(passwords);
-      ToastService.showToast("Loaded all passwords.");
+      ToastService.showToast(AppStrings.successPasswordLoad);
     } catch (e) {
-      ToastService.showToast("Failed to load passwords.",
+      ToastService.showToast(AppStrings.failedPasswordLoad,
           type: ToastificationType.error);
     }
     LoadingScreen.instance().hide();
@@ -142,7 +143,7 @@ class _PasswordPageState extends State<PasswordPage> {
 
           passwordProvider.setPasswordList(searchRes);
         } catch (e) {
-          ToastService.showToast("Failed to search",
+          ToastService.showToast(AppStrings.searchFail,
               type: ToastificationType.error);
         }
       });
@@ -159,7 +160,7 @@ class _PasswordPageState extends State<PasswordPage> {
                   decoration: InputDecoration(
                     fillColor: Theme.of(context).colorScheme.secondary,
                     filled: true,
-                    hintText: 'Search by name...',
+                    hintText: AppStrings.searchByName,
                     hintStyle: TextStyle(
                         color: Theme.of(context).colorScheme.onSurface),
                     prefixIcon: Icon(Icons.search,
@@ -205,7 +206,7 @@ class _PasswordPageState extends State<PasswordPage> {
           if (_isSearching)
             TextButton(
               child: Text(
-                'Cancel',
+                AppStrings.cancel,
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
               onPressed: () {
