@@ -6,6 +6,7 @@ import 'package:my_stash/services/auth_service.dart';
 import 'package:my_stash/services/toast_service.dart';
 import 'package:my_stash/services/validator_service.dart';
 import 'package:my_stash/widgets/auth_page.dart';
+import 'package:toastification/toastification.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -39,15 +40,16 @@ class _RegisterPageState extends State<RegisterPage> {
       await _authService.register(_emailController.text,
           _passwordController.text, _nameController.text);
 
-      ToastService.showToast("Registration successful.", type: 'success');
+      ToastService.showToast("Registration successful.");
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginPage()),
       );
     } on CustomException catch (ce) {
-      ToastService.showToast(ce.toString(), type: 'error');
+      ToastService.showToast(ce.toString(), type: ToastificationType.error);
     } catch (e) {
-      ToastService.showToast("Failed. Please Try Again Later.", type: "error");
+      ToastService.showToast("Failed. Please Try Again Later.",
+          type: ToastificationType.error);
     }
   }
 

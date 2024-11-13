@@ -7,8 +7,10 @@ import 'package:my_stash/providers/passwords_provider.dart';
 import 'package:my_stash/providers/user_provider.dart';
 import 'package:my_stash/services/password_service.dart';
 import 'package:my_stash/services/toast_service.dart';
+import 'package:my_stash/widgets/loading_screen_controller.dart';
 import 'package:my_stash/widgets/password_list_item.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 
 class PasswordPage extends StatefulWidget {
   const PasswordPage({super.key});
@@ -22,15 +24,28 @@ class _PasswordPageState extends State<PasswordPage> {
   final TextEditingController _searchController = TextEditingController();
   final PasswordService _passwordService = PasswordService();
   Timer? debounceTimer;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchPasswords(); // Fetch passwords when the widget is initialized
-
+    // Add listener for search controller
     _searchController.addListener(() {
       setState(() {});
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Check if we've already initialized to avoid multiple calls
+    if (!_isInitialized) {
+      _isInitialized = true;
+      // Fetch passwords after the widget is fully built
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _fetchPasswords();
+      });
+    }
   }
 
   @override
@@ -41,6 +56,7 @@ class _PasswordPageState extends State<PasswordPage> {
   }
 
   Future<void> _fetchPasswords() async {
+    LoadingScreen.instance().show(context: context);
     try {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       UserModel? user = userProvider.user;
@@ -50,11 +66,12 @@ class _PasswordPageState extends State<PasswordPage> {
       final passwordProvider =
           Provider.of<PasswordsProvider>(context, listen: false);
       passwordProvider.setPasswordList(passwords);
-      ToastService.showToast("Loaded all passwords.", type: "success");
+      ToastService.showToast("Loaded all passwords.");
     } catch (e) {
-      // Handle any errors here (e.g., show a message)
-      ToastService.showToast("Failed to load passwords.", type: "error");
+      ToastService.showToast("Failed to load passwords.",
+          type: ToastificationType.error);
     }
+    LoadingScreen.instance().hide();
   }
 
   @override
@@ -125,7 +142,8 @@ class _PasswordPageState extends State<PasswordPage> {
 
           passwordProvider.setPasswordList(searchRes);
         } catch (e) {
-          ToastService.showToast("Failed to search", type: "error");
+          ToastService.showToast("Failed to search",
+              type: ToastificationType.error);
         }
       });
     }

@@ -3,6 +3,7 @@ import 'package:my_stash/pages/home.dart';
 import 'package:my_stash/services/crypto_service.dart';
 import 'package:my_stash/services/key_service.dart';
 import 'package:my_stash/services/toast_service.dart';
+import 'package:toastification/toastification.dart';
 
 class KeyInputPage extends StatefulWidget {
   final String userId;
@@ -29,17 +30,13 @@ class _KeyInputPageState extends State<KeyInputPage> {
     setState(() => _isLoading = true);
 
     try {
-
       final key = _cryptoService.deriveKey(_keyController.text);
 
       await _keyService.saveKey(widget.userId, key);
 
       if (!mounted) return;
 
-      ToastService.showToast(
-        "Encryption key saved successfully",
-        type: "success",
-      );
+      ToastService.showToast("Encryption key saved successfully");
 
       Navigator.pushReplacement(
         context,
@@ -48,7 +45,7 @@ class _KeyInputPageState extends State<KeyInputPage> {
     } catch (e) {
       ToastService.showToast(
         "Failed to save encryption key. Please try again.",
-        type: "error",
+        type: ToastificationType.error,
       );
     } finally {
       if (mounted) {

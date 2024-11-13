@@ -5,10 +5,10 @@ import 'package:my_stash/pages/login.dart';
 import 'package:my_stash/providers/passwords_provider.dart';
 import 'package:my_stash/providers/theme_provider.dart';
 import 'package:my_stash/providers/user_provider.dart';
-import 'package:my_stash/services/toast_service.dart';
 import 'package:my_stash/theme/dark_theme.dart';
 import 'package:my_stash/theme/light_theme.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,14 +34,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
-    return MaterialApp(
-      navigatorKey: ToastService.navigatorKey,
-      scaffoldMessengerKey: GlobalKey<ScaffoldMessengerState>(),
-      debugShowCheckedModeBanner: false,
-      home: LoginPage(),
-      themeMode: themeProvider.themeMode,
-      theme: lightTheme, // Use your custom light theme
-      darkTheme: darkTheme, // Use your custom dark theme
+    return ToastificationWrapper(
+      child: MaterialApp(
+        scaffoldMessengerKey: GlobalKey<ScaffoldMessengerState>(),
+        debugShowCheckedModeBanner: false,
+        home: LoginPage(),
+        themeMode: themeProvider.themeMode,
+        theme: lightTheme, // Use your custom light theme
+        darkTheme: darkTheme, // Use your custom dark theme
+      ),
     );
   }
 }

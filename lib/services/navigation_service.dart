@@ -4,6 +4,7 @@ import 'package:my_stash/pages/home.dart';
 import 'package:my_stash/pages/key_input.dart';
 import 'package:my_stash/services/key_service.dart';
 import 'package:my_stash/services/toast_service.dart';
+import 'package:toastification/toastification.dart';
 
 class NavigationService {
   final KeyService _keyService = KeyService();
@@ -31,10 +32,7 @@ class NavigationService {
       if (hasKeyInFirebase) {
         String? syncedKey = await _keyService.syncKeyFromFirebase(userId);
         if (syncedKey != null) {
-          ToastService.showToast(
-            "Encryption key synchronized from cloud",
-            type: "success",
-          );
+          ToastService.showToast("Encryption key synchronized from cloud");
           return true;
         }
       }
@@ -43,7 +41,7 @@ class NavigationService {
     } catch (e) {
       ToastService.showToast(
         "Error checking encryption key. Please try again.",
-        type: "error",
+        type: ToastificationType.error,
       );
       return false;
     }

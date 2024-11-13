@@ -9,7 +9,9 @@ import 'package:my_stash/services/auth_service.dart';
 import 'package:my_stash/services/toast_service.dart';
 import 'package:my_stash/services/validator_service.dart';
 import 'package:my_stash/widgets/auth_page.dart';
+import 'package:my_stash/widgets/loading_screen_controller.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
@@ -37,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
     if (!(_loginFormKey.currentState?.validate() ?? true)) {
       return;
     }
+    LoadingScreen.instance().show(context: context);
     try {
       UserModel user = await _authService.login(
           _emailController.text, _passwordController.text);
@@ -45,17 +48,18 @@ class _LoginPageState extends State<LoginPage> {
         final userProvider = Provider.of<UserProvider>(context, listen: false);
         userProvider.setUser(user);
 
-        ToastService.showToast("Login successful.", type: 'success');
+        ToastService.showToast("Login successful.");
 
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const HomePage()));
       }
     } on CustomException catch (e) {
-      ToastService.showToast(e.message, type: "error");
+      ToastService.showToast(e.message, type: ToastificationType.error);
     } catch (e) {
       ToastService.showToast("Failed to Login. Please try again later.",
-          type: "error");
+          type: ToastificationType.error);
     }
+    LoadingScreen.instance().hide();
   }
 
   @override

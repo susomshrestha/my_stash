@@ -6,7 +6,9 @@ import 'package:my_stash/providers/user_provider.dart';
 import 'package:my_stash/services/password_service.dart';
 import 'package:my_stash/services/toast_service.dart';
 import 'package:my_stash/widgets/field_row.dart';
+import 'package:my_stash/widgets/loading_screen_controller.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 
 class PasswordDetailPage extends StatelessWidget {
   const PasswordDetailPage({super.key});
@@ -35,6 +37,7 @@ class PasswordDetailPage extends StatelessWidget {
     }
 
     void deletePassword() async {
+      LoadingScreen.instance().show(context: context);
       try {
         await _passwordService.deletePassword(
             userProvider.user!.id, password.id!);
@@ -43,10 +46,12 @@ class PasswordDetailPage extends StatelessWidget {
           Navigator.pop(context);
         }
         passwordProvider.deletePassword(password.id!);
-        ToastService.showToast("Successfully delete password", type: "success");
+        ToastService.showToast("Successfully delete password");
       } catch (e) {
-        ToastService.showToast("Failed to delete Password", type: "error");
+        ToastService.showToast("Failed to delete Password",
+            type: ToastificationType.error);
       }
+      LoadingScreen.instance().hide();
     }
 
     void deletePasswordConfirmation() {

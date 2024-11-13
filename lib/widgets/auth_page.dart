@@ -5,7 +5,9 @@ import 'package:my_stash/providers/user_provider.dart';
 import 'package:my_stash/services/auth_service.dart';
 import 'package:my_stash/services/navigation_service.dart';
 import 'package:my_stash/services/toast_service.dart';
+import 'package:my_stash/widgets/loading_screen_controller.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 
 class AuthPage extends StatelessWidget {
   final Widget form;
@@ -22,23 +24,25 @@ class AuthPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     void signInWithGoogle(BuildContext context) async {
+      LoadingScreen.instance().show(context: context);
       try {
         UserModel user = await _authService.signInWithGoogle();
 
         final userProvider = Provider.of<UserProvider>(context, listen: false);
         userProvider.setUser(user);
 
-        ToastService.showToast("Sign in successful.", type: 'success');
+        ToastService.showToast("Sign in successful.");
 
         if (context.mounted) {
           await _navigationService.handleAuthenticatedNavigation(context, user);
         }
       } on CustomException catch (ce) {
-        ToastService.showToast(ce.toString(), type: "error");
+        ToastService.showToast(ce.toString(), type: ToastificationType.error);
       } catch (e) {
         ToastService.showToast("Failed. Please Try Again Later.",
-            type: "error");
+            type: ToastificationType.error);
       }
+      LoadingScreen.instance().hide();
     }
 
     return Scaffold(

@@ -9,7 +9,9 @@ import 'package:my_stash/services/password_form_service.dart';
 import 'package:my_stash/services/toast_service.dart';
 import 'package:my_stash/services/validator_service.dart';
 import 'package:my_stash/widgets/help_dialog.dart';
+import 'package:my_stash/widgets/loading_screen_controller.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 
 class ManagePasswordPage extends StatefulWidget {
   final PasswordModel? password;
@@ -316,51 +318,53 @@ class _ManagePasswordPageState extends State<ManagePasswordPage> {
     final String appTitle = widget.password != null ? 'Edit' : 'Add';
 
     void saveForm() async {
-      if (_manageFormKey.currentState!.validate()) {
+      if (!(_manageFormKey.currentState?.validate() ?? true)) {
+        return;
+      }
+      LoadingScreen.instance().show(context: context);
+      try {
         final userProvider = Provider.of<UserProvider>(context, listen: false);
         final passwordProvider =
             Provider.of<PasswordsProvider>(context, listen: false);
         UserModel? user = userProvider.user;
 
         if (user != null) {
-          try {
-            List<QuestionAnswerModel> extraFields = questionAnswers
-                .map((q) => QuestionAnswerModel(
-                    question: q.questionController.text,
-                    answer: q.answerController.text))
-                .toList();
+          List<QuestionAnswerModel> extraFields = questionAnswers
+              .map((q) => QuestionAnswerModel(
+                  question: q.questionController.text,
+                  answer: q.answerController.text))
+              .toList();
 
-            if (appTitle == 'Add') {
-              final addedPassword = await _passwordFormService.addNewPassword(
-                  userId: user.id,
-                  title: _titleController.text,
-                  username: _userController.text,
-                  email: _emailController.text,
-                  password: _passwordController.text,
-                  extraFields: extraFields);
-              passwordProvider.addNewPassword(addedPassword);
-              ToastService.showToast("Added successful.", type: 'success');
-            } else {
-              final editedPassword =
-                  await _passwordFormService.updateExistingPassword(
-                      userId: user.id,
-                      oldPassword: widget.password!,
-                      title: _titleController.text,
-                      username: _userController.text,
-                      email: _emailController.text,
-                      password: _passwordController.text,
-                      editedExtraFields: extraFields);
-              passwordProvider.editPassword(
-                  editedPassword, widget.password!.id!);
-              passwordProvider.setPassword(editedPassword);
-              ToastService.showToast("Updated successful.", type: 'success');
-            }
-            Navigator.pop(context);
-          } on CustomException catch (ce) {
-            ToastService.showToast(ce.toString(), type: 'error');
+          if (appTitle == 'Add') {
+            final addedPassword = await _passwordFormService.addNewPassword(
+                userId: user.id,
+                title: _titleController.text,
+                username: _userController.text,
+                email: _emailController.text,
+                password: _passwordController.text,
+                extraFields: extraFields);
+            passwordProvider.addNewPassword(addedPassword);
+            ToastService.showToast("Added successful.");
+          } else {
+            final editedPassword =
+                await _passwordFormService.updateExistingPassword(
+                    userId: user.id,
+                    oldPassword: widget.password!,
+                    title: _titleController.text,
+                    username: _userController.text,
+                    email: _emailController.text,
+                    password: _passwordController.text,
+                    editedExtraFields: extraFields);
+            passwordProvider.editPassword(editedPassword, widget.password!.id!);
+            passwordProvider.setPassword(editedPassword);
+            ToastService.showToast("Updated successful.");
           }
+          Navigator.pop(context);
         }
+      } on CustomException catch (ce) {
+        ToastService.showToast(ce.toString(), type: ToastificationType.error);
       }
+      LoadingScreen.instance().hide();
     }
 
     return SafeArea(

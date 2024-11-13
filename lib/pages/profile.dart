@@ -6,7 +6,9 @@ import 'package:my_stash/providers/theme_provider.dart';
 import 'package:my_stash/providers/user_provider.dart';
 import 'package:my_stash/services/auth_service.dart';
 import 'package:my_stash/services/toast_service.dart';
+import 'package:my_stash/widgets/loading_screen_controller.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 
 class ProfilePage extends StatelessWidget {
   final AuthService _googleAuthService = AuthService();
@@ -278,10 +280,10 @@ class ProfilePage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
+                LoadingScreen.instance().show(context: context);
                 try {
                   await _googleAuthService.singOut(context);
-                  ToastService.showToast("Successfully signed out.",
-                      type: 'success');
+                  ToastService.showToast("Successfully signed out.");
                   if (context.mounted) {
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) => LoginPage()));
@@ -289,8 +291,10 @@ class ProfilePage extends StatelessWidget {
                   userProvider.clearUser();
                   passwordProvider.clearAll();
                 } catch (e) {
-                  ToastService.showToast(e.toString(), type: 'error');
+                  ToastService.showToast(e.toString(),
+                      type: ToastificationType.error);
                 }
+                LoadingScreen.instance().hide();
               },
               style: OutlinedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
