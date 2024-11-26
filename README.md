@@ -60,5 +60,5 @@ Authentication
 - Only authorized users can access their data using Firebase Google Authentication.
 
 ##Screenshot
-[screenshot](screenshot/ss1.png)
-[screenshot](screenshot/ss2.png)
+[screenshot](screenshot/ss1.jpeg)
+[screenshot](screenshot/ss2.jpeg)
